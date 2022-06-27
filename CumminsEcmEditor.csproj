@@ -6,4 +6,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="ConsoleEditor\**" />
+    <EmbeddedResource Remove="ConsoleEditor\**" />
+    <None Remove="ConsoleEditor\**" />
+  </ItemGroup>
+
 </Project>
