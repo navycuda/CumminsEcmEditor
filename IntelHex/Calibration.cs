@@ -11,15 +11,17 @@ namespace CumminsEcmEditor.IntelHex
     public class Calibration
     {
         #region Private Properties
-        private string CheckSum { get; set; }
-        private XmlHeader Header { get; set; }
+        private string FilePath { get; set; }
+        private string? CheckSum { get; set; }
+        private XmlHeader? Header { get; set; }
         private Record[] Records { get; set; }
         #endregion
 
         #region Constructor
         public Calibration(string filePath)
         {
-            string[] xCal = Files.Load(filePath);
+            FilePath = filePath;
+            string[] xCal = EcmFiles.Load(filePath);
             int eLA = 0;
             List<Record> records = new();
             List<string> headers = new();
@@ -28,7 +30,7 @@ namespace CumminsEcmEditor.IntelHex
             {
                 Record r;
                 int e;
-                // If there this string is a valid record, then
+                // If this string is a valid record, then
                 // create a new record and add it to the list
                 // as well as updating the extended linear address
                 if (Record.NewRecord(s, eLA, out r, out e))
@@ -47,8 +49,38 @@ namespace CumminsEcmEditor.IntelHex
             }
             // Set the Records array.
             Records = records.ToArray();
-            // Set the CheckSum
-            CheckSum = headers[0];
+            // Set the CheckSum, if the file is not headerless
+            if (headers.Count > 0)
+                CheckSum = headers[0];
+        }
+        #endregion
+
+        #region Public Methods
+        public void SaveAsMod()
+        {
+            string[][] calibration = new string[2][];
+            string filePath = FilePath.Replace(".XCAL", "");
+            filePath += "_mod.XCAL";
+            List<string> header = new();
+            int headerLines = 0;
+            if (CheckSum != null)
+                header.Add(CheckSum);
+            if (Header != null)
+                header.Add(Header.GetXmlString());
+            calibration[0] = header.ToArray();
+            calibration[1] = GetIntelHexRecords();
+
+            EcmFiles.Save(filePath, calibration);
+        }
+        #endregion
+
+        #region Private Methods
+        private string[] GetIntelHexRecords()
+        {
+            string[] records = new string[Records.Length];
+            for (int i = 0; i < records.Length; i++)
+                records[i] = Records[i].GetIntelHexString();
+            return records;
         }
         #endregion
     }

@@ -50,10 +50,17 @@ namespace CumminsEcmEditor.IntelHex
 
         #region Private Properties
         private byte RecordLength { get; set; }
+        /// <summary>
+        /// This is the 16bit address for this record. ie 0x____802C
+        /// </summary>
         private int Address { get; set; }
+        /// <summary>
+        /// This is the intel Hex386 Address. ie 0x8002____
+        /// </summary>
         private int ExtendedLinearAddress { get; set; }
         private byte RecordType { get; set; }
         private byte[] Data { get; set; }
+        private byte[]? ModifiedData { get; set; }
         private byte CheckSum { get; set; }
         #endregion
 
@@ -94,7 +101,24 @@ namespace CumminsEcmEditor.IntelHex
         }
         #endregion
 
-        #region Static Methods
+        #region Public Get Methods
+        public int GetAbsoluteStartAddress() =>
+            ExtendedLinearAddress + Address;
+        public int GetAbsoluteEndAddress() =>
+            ExtendedLinearAddress + Address + RecordLength;
+        /// <summary>
+        /// If there is modifed data, that is returned, otherwise returns the orginal
+        /// data.
+        /// </summary>
+        /// <returns>Data as hex string</returns>
+        public string GetIntelHexString()
+        {
+            string data = (ModifiedData != null) ? ModifiedData.ByteToHex() : Data.ByteToHex();
+            return $":{RecordLength.ByteToHex()}{Address.IntToHex()}{RecordType.ByteToHex()}{data}{CheckSum.ByteToHex()}";
+        }
+        #endregion
+
+        #region Public Static Methods
         public static bool NewRecord(string hexLine, int extendedLinearAddress, out Record record, out int eLA)
         {
             record = null;

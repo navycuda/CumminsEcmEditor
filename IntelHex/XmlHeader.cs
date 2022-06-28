@@ -31,5 +31,8 @@ namespace CumminsEcmEditor.IntelHex
         public string value_2Field {get; set; }
         public string value_3Field {get; set; }
         public string value_4Field { get; set; }
+
+        public string GetXmlString() =>
+            "<xml_header>Not Implimented</xml_header>";
     }
 }
