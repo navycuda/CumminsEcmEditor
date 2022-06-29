@@ -44,5 +44,21 @@ namespace CumminsEcmEditor.Tools
                     result.Add(document[s][ss]);
             Save(filePath, result.ToArray());
         }
+        public static void OverwriteSave(string filePath, string[] document)
+        {
+            AndItsGone(filePath);
+            Save(filePath, document);
+        }
+        public static void OverwriteSave(string filePath, string[][] document)
+        {
+            AndItsGone(filePath);
+            Save(filePath, document);
+        }
+
+        private static void AndItsGone(string filePath)
+        {
+            if (File.Exists(filePath))
+                File.Delete(filePath);
+        }
     }
 }

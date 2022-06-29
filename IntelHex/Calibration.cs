@@ -1,4 +1,5 @@
 ﻿using CumminsEcmEditor.Tools;
+using CumminsEcmEditor.Tools.Extensions;
 
 using System;
 using System.Collections.Generic;
@@ -56,7 +57,7 @@ namespace CumminsEcmEditor.IntelHex
         #endregion
 
         #region Public Methods
-        public void SaveAsMod()
+        public void SaveModdedCalibration(bool overwrite = false)
         {
             string[][] calibration = new string[2][];
             string filePath = FilePath.Replace(".XCAL", "");
@@ -70,7 +71,18 @@ namespace CumminsEcmEditor.IntelHex
             calibration[0] = header.ToArray();
             calibration[1] = GetIntelHexRecords();
 
+            if (overwrite)
+            {
+                EcmFiles.OverwriteSave(filePath, calibration);
+                return;
+            }
             EcmFiles.Save(filePath, calibration);
+        }
+        public void SetValue(string hexAbsAddress, byte value)
+        {
+            int abs = hexAbsAddress.HexToInt();
+            Record record = Records.Where(r => r.HasAbsoluteAddress(abs)).FirstOrDefault();
+            record.SetDataByte(abs, value);
         }
         #endregion
 

@@ -62,6 +62,7 @@ namespace CumminsEcmEditor.IntelHex
         private byte[] Data { get; set; }
         private byte[]? ModifiedData { get; set; }
         private byte CheckSum { get; set; }
+        private bool IsModified { get; set; }
         #endregion
 
         #region Constructors
@@ -99,23 +100,61 @@ namespace CumminsEcmEditor.IntelHex
             }
             return result;
         }
+        private int GetAbsoluteStartAddress() =>
+            ExtendedLinearAddress + Address;
+        private int GetAbsoluteEndAddress() =>
+            ExtendedLinearAddress + Address + (RecordLength > 0 ? RecordLength - 1 : 0 );
+        private int? GetPosition(int absoluteAddress)
+        {
+            int absStart = GetAbsoluteStartAddress();
+            int absEnd = GetAbsoluteEndAddress();
+            int? pos = null;
+
+            if (absoluteAddress <= absEnd && absoluteAddress >= absStart)
+                pos = absoluteAddress - absStart;
+
+            return pos;
+        }
+        private string GetRecordString() =>
+            $"{RecordLength.ByteToHex()}{Address.IntToHex(2)}{RecordType.ByteToHex()}{GetData()}";
+        private string GetCheckSum() =>
+            IsModified ? GetRecordString().CheckSum().ToString("X2") : CheckSum.ToString("X2");
+        private string GetData() =>
+            IsModified ? ModifiedData.ByteToHex() : Data.ByteToHex();
         #endregion
 
         #region Public Get Methods
-        public int GetAbsoluteStartAddress() =>
-            ExtendedLinearAddress + Address;
-        public int GetAbsoluteEndAddress() =>
-            ExtendedLinearAddress + Address + RecordLength;
+        public bool HasAbsoluteAddress(int absoluteAddress) =>
+            GetPosition(absoluteAddress) != null;
+        public byte? GetDataByte(int absoluteAddress, byte value)
+        {
+            byte? result = null;
+            int? pos = GetPosition(absoluteAddress);
+
+            if (pos != null)
+                pos = IsModified ? ModifiedData[(int)pos] : Data[(int)pos];
+
+            return result;
+        }
+        public void SetDataByte(int absoluteAddress, byte value)
+        {
+            int? pos = GetPosition(absoluteAddress);
+            if (pos == null)
+                return;
+            if (!IsModified)
+            {
+                ModifiedData = Data.ToArray();
+                IsModified = true;
+            }
+            ModifiedData[(int)pos] = value;
+        }
         /// <summary>
         /// If there is modifed data, that is returned, otherwise returns the orginal
         /// data.
         /// </summary>
         /// <returns>Data as hex string</returns>
-        public string GetIntelHexString()
-        {
-            string data = (ModifiedData != null) ? ModifiedData.ByteToHex() : Data.ByteToHex();
-            return $":{RecordLength.ByteToHex()}{Address.IntToHex()}{RecordType.ByteToHex()}{data}{CheckSum.ByteToHex()}";
-        }
+        public string GetIntelHexString() =>
+            $":{GetRecordString()}{GetCheckSum()}";
         #endregion
 
         #region Public Static Methods
