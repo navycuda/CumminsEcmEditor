@@ -87,12 +87,47 @@ namespace CumminsEcmEditor.IntelHex
         #endregion
 
         #region Private Methods
+        /// <summary>
+        /// Generates the intel hex line record for the .XCAL
+        /// </summary>
         private string[] GetIntelHexRecords()
         {
             string[] records = new string[Records.Length];
             for (int i = 0; i < records.Length; i++)
                 records[i] = Records[i].GetIntelHexString();
             return records;
+        }
+        #endregion
+    }
+    public class Cursor
+    {
+        private Record[] Records { get; set; }
+        private Record CurrentRecord => Records[IndexPosition];
+        private int Address { get; set; }
+        private int IndexPosition { get; set; }
+
+        public Cursor(Record[] records)
+        {
+            Records = records;
+            Address = CurrentRecord.GetAbsoluteStartAddress();
+            IndexPosition = Array.IndexOf(Records, Records.GetFirstRecord());
+        }
+
+
+
+        #region Private Methods
+        private void AdvanceAddressOneByte()
+        {
+            Address++;
+            if (CurrentRecord.HasAbsoluteAddress(Address))
+                return;
+            else
+            {
+
+            }
+
+
+
         }
         #endregion
     }

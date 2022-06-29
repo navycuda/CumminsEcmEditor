@@ -79,7 +79,7 @@ namespace CumminsEcmEditor.IntelHex
             RecordLength = hexLine[1..3].HexToByte();
             Address = hexLine[3..7].HexToInt();
             RecordType = hexLine[7..9].HexToByte();
-            if (RecordType == 0x04)
+            if (GetRecordType() == XCalRecordType.ExtendedLinearAddress)
                 ExtendedLinearAddress = hexLine[9..(9 + 4)].HexToInt() << 16;
             else
                 ExtendedLinearAddress = extendedLinearAddress;
@@ -100,10 +100,6 @@ namespace CumminsEcmEditor.IntelHex
             }
             return result;
         }
-        private int GetAbsoluteStartAddress() =>
-            ExtendedLinearAddress + Address;
-        private int GetAbsoluteEndAddress() =>
-            ExtendedLinearAddress + Address + (RecordLength > 0 ? RecordLength - 1 : 0 );
         private int? GetPosition(int absoluteAddress)
         {
             int absStart = GetAbsoluteStartAddress();
@@ -124,6 +120,12 @@ namespace CumminsEcmEditor.IntelHex
         #endregion
 
         #region Public Get Methods
+        public int GetAbsoluteStartAddress() =>
+            ExtendedLinearAddress + Address;
+        public int GetAbsoluteEndAddress() =>
+            ExtendedLinearAddress + Address + (RecordLength > 0 ? RecordLength - 1 : 0 );
+        public XCalRecordType GetRecordType() =>
+            (XCalRecordType)RecordType;
         public bool HasAbsoluteAddress(int absoluteAddress) =>
             GetPosition(absoluteAddress) != null;
         public byte? GetDataByte(int absoluteAddress, byte value)
@@ -136,6 +138,16 @@ namespace CumminsEcmEditor.IntelHex
 
             return result;
         }
+        /// <summary>
+        /// If there is modifed data, that is returned, otherwise returns the orginal
+        /// data.
+        /// </summary>
+        /// <returns>Data as hex string</returns>
+        public string GetIntelHexString() =>
+            $":{GetRecordString()}{GetCheckSum()}";
+        #endregion
+
+        #region Public Set Methods
         public void SetDataByte(int absoluteAddress, byte value)
         {
             int? pos = GetPosition(absoluteAddress);
@@ -148,13 +160,6 @@ namespace CumminsEcmEditor.IntelHex
             }
             ModifiedData[(int)pos] = value;
         }
-        /// <summary>
-        /// If there is modifed data, that is returned, otherwise returns the orginal
-        /// data.
-        /// </summary>
-        /// <returns>Data as hex string</returns>
-        public string GetIntelHexString() =>
-            $":{GetRecordString()}{GetCheckSum()}";
         #endregion
 
         #region Public Static Methods

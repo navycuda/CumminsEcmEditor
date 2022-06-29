@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CumminsEcmEditor.IntelHex;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -52,7 +54,6 @@ namespace CumminsEcmEditor.Tools.Extensions
                 return i.ToString("X4");
             return i.ToString("X8");
         }
-
         public static byte CheckSum(this string hex)
         {
             byte[] array = hex.HexToBytes();
@@ -61,5 +62,9 @@ namespace CumminsEcmEditor.Tools.Extensions
                 sum += b & 0xFF;
             return (byte)-sum;
         }
+        public static int GetStartingAbsoluteAddress(this Record[] r) =>
+            r.GetFirstRecord().GetAbsoluteStartAddress();
+        public static Record GetFirstRecord(this Record[] r) =>
+            r.Where(r => r.GetRecordType() == XCalRecordType.Data).First();
     }
 }
