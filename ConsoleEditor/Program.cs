@@ -1,12 +1,24 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using CumminsEcmEditor.IntelHex;
+using CumminsEcmEditor.Tools.Extensions;
 
-Console.WriteLine("Hello, World!");
 
 Calibration xCal = new(@"Y:\WinOLS\Short.XCAL");
 
-xCal.SetValue("8002002C", 0xFF);
-xCal.SetValue("80020040", 0xFF);
-xCal.SetValue("8002005F", 0xFF);
+for (int i = 0; i <128; i++)
+{
+    string loopValue = "";
+    if (i > 0 && i % 32 == 0)
+        loopValue += "\n";
+    loopValue += $"{xCal.Cursor.Read().ByteToHex()} ";
+    Console.Write(loopValue);
+}
 
-xCal.SaveModdedCalibration(true);
+
+
+
+
+
+//xCal.SaveModdedCalibration(true);
+
+

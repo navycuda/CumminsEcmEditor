@@ -106,7 +106,9 @@ namespace CumminsEcmEditor.IntelHex
             int absEnd = GetAbsoluteEndAddress();
             int? pos = null;
 
-            if (absoluteAddress <= absEnd && absoluteAddress >= absStart)
+            if (absoluteAddress <= absEnd && 
+                absoluteAddress >= absStart &&
+                GetRecordType() == XCalRecordType.Data)
                 pos = absoluteAddress - absStart;
 
             return pos;
@@ -128,13 +130,13 @@ namespace CumminsEcmEditor.IntelHex
             (XCalRecordType)RecordType;
         public bool HasAbsoluteAddress(int absoluteAddress) =>
             GetPosition(absoluteAddress) != null;
-        public byte? GetDataByte(int absoluteAddress, byte value)
+        public byte? GetDataByte(int absoluteAddress)
         {
             byte? result = null;
             int? pos = GetPosition(absoluteAddress);
 
             if (pos != null)
-                pos = IsModified ? ModifiedData[(int)pos] : Data[(int)pos];
+                result = IsModified ? ModifiedData[(int)pos] : Data[(int)pos];
 
             return result;
         }
