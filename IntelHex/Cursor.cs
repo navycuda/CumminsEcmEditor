@@ -21,19 +21,13 @@ namespace CumminsEcmEditor.IntelHex
         #endregion
 
         #region Public Read Methods
-        public byte Read()
-        {
-            byte b = (byte)CurrentRecord.GetDataByte(Address);
-            AdvanceAddressOneByte();
-            return b;
-        }
-        public byte Search_Read(int absoluteAddress)
+        public byte Read(int absoluteAddress)
         {
             if (SetCursorPosition(absoluteAddress))
                 return Read();
             return 0xFF;
         }
-        public byte[] Search_Read(int absoluteAddress, int totalBytes)
+        public byte[] Read(int absoluteAddress, int totalBytes)
         {
             if (!SetCursorPosition(absoluteAddress))
                 return null;
@@ -45,7 +39,7 @@ namespace CumminsEcmEditor.IntelHex
             }
             return result;
         }
-        public byte[][] Search_Read(int absoluteAddress, int bytesPerElement, int totalElements)
+        public byte[][] Read(int absoluteAddress, int bytesPerElement, int totalElements)
         {
             if (!SetCursorPosition(absoluteAddress))
                 return null;
@@ -61,24 +55,19 @@ namespace CumminsEcmEditor.IntelHex
         #endregion
 
         #region Public Write Methods
-        public void Write(byte b)
-        {
-            CurrentRecord.SetDataByte(Address, b);
-            AdvanceAddressOneByte();
-        }
-        public void Search_Write(int absoluteAddress, byte b)
+        public void Write(int absoluteAddress, byte b)
         {
             if (SetCursorPosition(absoluteAddress))
                 Write(b);
         }
-        public void Search_Write(int absoluteAddress, byte[] bb)
+        public void Write(int absoluteAddress, byte[] bb)
         {
             if (!SetCursorPosition(absoluteAddress))
                 return;
             foreach (byte b in bb)
                 Write(b);
         }
-        public void Search_Write(int absoluteAddress, byte[][] bbb)
+        public void Write(int absoluteAddress, byte[][] bbb)
         {
             if (!SetCursorPosition(absoluteAddress))
                 return;
@@ -89,6 +78,17 @@ namespace CumminsEcmEditor.IntelHex
         #endregion
 
         #region Private Methods
+        private byte Read()
+        {
+            byte b = (byte)CurrentRecord.GetDataByte(Address);
+            AdvanceAddressOneByte();
+            return b;
+        }   
+        private void Write(byte b)
+        {
+            CurrentRecord.SetDataByte(Address, b);
+            AdvanceAddressOneByte();
+        }
         private bool SetCursorPosition(int absoluteAddress)
         {
             try
