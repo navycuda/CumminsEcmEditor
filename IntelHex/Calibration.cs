@@ -4,8 +4,10 @@ using CumminsEcmEditor.Tools.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.PortableExecutable;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace CumminsEcmEditor.IntelHex
 {
@@ -57,8 +59,8 @@ namespace CumminsEcmEditor.IntelHex
             // Setup the cursor
             Cursor = new(Records);
             // Set the CheckSum, if the file is not headerless
-            if (headers.Count > 0)
-                CheckSum = headers[0];
+
+            GetXmlHeader(headers.ToArray());
         }
         #endregion
 
@@ -73,7 +75,7 @@ namespace CumminsEcmEditor.IntelHex
             if (CheckSum != null)
                 header.Add(CheckSum);
             if (Header != null)
-                header.Add(Header.GetXmlString());
+                header.Add(Header.GetXmlHeader());
             calibration[0] = header.ToArray();
             calibration[1] = GetIntelHexRecords();
 
@@ -83,12 +85,6 @@ namespace CumminsEcmEditor.IntelHex
                 return;
             }
             EcmFiles.Save(filePath, calibration);
-        }
-        public void SetValue(string hexAbsAddress, byte value)
-        {
-            int abs = hexAbsAddress.HexToInt();
-            Record record = Records.Where(r => r.HasAbsoluteAddress(abs)).FirstOrDefault();
-            record.SetDataByte(abs, value);
         }
         #endregion
 
@@ -102,6 +98,18 @@ namespace CumminsEcmEditor.IntelHex
             for (int i = 0; i < records.Length; i++)
                 records[i] = Records[i].GetIntelHexString();
             return records;
+        }
+        private void GetXmlHeader(string[] xmlHeader)
+        {
+            string result;
+            if (xmlHeader.Length > 0)
+                CheckSum = xmlHeader[0];
+            result = string.Join("", xmlHeader[1..]);
+            using (StringReader sr = new(result))
+            {
+                XmlSerializer xmlSerializer = new(typeof(XmlHeader));
+                Header = (XmlHeader?)xmlSerializer.Deserialize(sr);
+            }
         }
         #endregion
     }

@@ -12,14 +12,14 @@ Console.WriteLine();
 
 byte[] testArray = new byte[] { 0xFF, 0x17, 0x01, 0xFF };
 
-xCal.Cursor.Write("8002002C".HexToInt(), testArray);
+// xCal.Cursor.Write("8002002C".HexToInt(), testArray);
 
 bbb = xCal.Cursor.Read("80020000".HexToInt(), 32, 5);
 
 outputArray(bbb);
 Console.WriteLine();
 
-xCal.Cursor.Write("8002002C".HexToInt(), GenerateTestData(8));
+// xCal.Cursor.Write("8002002C".HexToInt(), GenerateTestData(8));
 
 bbb = xCal.Cursor.Read("80020000".HexToInt(), 32, 5);
 

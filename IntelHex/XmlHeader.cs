@@ -1,4 +1,5 @@
 ﻿using CumminsEcmEditor.Tools.Extensions;
+using CumminsEcmEditor.Tools;
 
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace CumminsEcmEditor.IntelHex
 {
     [Serializable]
     [XmlType(AnonymousType = true)]
-    [XmlRoot(Namespace = "", IsNullable = false)]
+    [XmlRoot("compatibility_header", IsNullable = false)]
     public class XmlHeader
     {
         public string calibration_version {get; set; }
@@ -34,8 +35,15 @@ namespace CumminsEcmEditor.IntelHex
         public string value_3 {get; set; }
         public string value_4 { get; set; }
 
-        public string GetXmlString() =>
-            "<xml_header>Not Implimented</xml_header>";
+        public string GetXmlHeader()
+        {
+            string result = EcmFiles.XmlSerialize(this);
+            string xmlClose = "</compatibility_header>";
+            int l = result.Length;
+            int x = xmlClose.Length;
+            result = result[..(l-x)] + "\n" + xmlClose;
+            return result;
+        }
         public int GetTableOfContentsAddress() =>
             index_table_address.HexToInt();
     }

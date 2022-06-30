@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace CumminsEcmEditor.Tools
 {
@@ -54,11 +56,61 @@ namespace CumminsEcmEditor.Tools
             AndItsGone(filePath);
             Save(filePath, document);
         }
+        public static string GetAsXml<T>(T xmlModel)
+        {
 
+            string output = "";
+            XmlSerializer xS = new XmlSerializer(typeof(T));
+            using (UTF8_StringWriter sW = new())
+            {
+                // Get the Xml string
+                xS.Serialize(sW, xmlModel);
+                output = sW.ToString();
+                // Setup to format the string
+                MemoryStream mS = new();
+                XmlTextWriter xT = new(mS, Encoding.UTF8);
+                XmlDocument d = new();
+                // Load the xml string into the xml document
+                d.LoadXml(output);
+                xT.Formatting = Formatting.Indented;
+                // Write the xml document into a formatting xmlTextwriter
+                d.WriteContentTo(xT);
+                xT.Flush();
+                mS.Flush();
+                // Rewind the memory stream to read contents
+                mS.Position = 0;
+                // Read MemoryStream content into streamReader
+                using (StreamReader sR = new(mS))
+                    output = sR.ReadToEnd();
+            }
+            return output;
+        }
+        public static string XmlSerialize<T>(T entity) where T : class
+        {
+            // removes version
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.OmitXmlDeclaration = true;
+
+            XmlSerializer xsSubmit = new XmlSerializer(typeof(T));
+            using (StringWriter sw = new StringWriter())
+            using (XmlWriter writer = XmlWriter.Create(sw, settings))
+            {
+                // removes namespace
+                var xmlns = new XmlSerializerNamespaces();
+                xmlns.Add(string.Empty, string.Empty);
+
+                xsSubmit.Serialize(writer, entity, xmlns);
+                return sw.ToString(); // Your XML
+            }
+        }
         private static void AndItsGone(string filePath)
         {
             if (File.Exists(filePath))
                 File.Delete(filePath);
         }
+    }
+    public class UTF8_StringWriter : StringWriter
+    {
+        public override Encoding Encoding => Encoding.UTF8;
     }
 }
