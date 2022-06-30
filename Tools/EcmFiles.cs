@@ -10,20 +10,7 @@ namespace CumminsEcmEditor.Tools
 {
     public static class EcmFiles
     {
-        /// <summary>
-        /// Loads a string array from the filePatj
-        /// </summary>
-        public static string[] Load(string filePath)
-        {
-            List<string> result = new();
-            using (StreamReader sr = new(filePath))
-            {
-                string line;
-                while ((line = sr.ReadLine()) != null)
-                    result.Add(line);
-            }
-            return result.ToArray();
-        }
+        #region Save Methods
         /// <summary>
         /// Saves a single string[] to the filePath
         /// </summary>
@@ -46,17 +33,103 @@ namespace CumminsEcmEditor.Tools
                     result.Add(document[s][ss]);
             Save(filePath, result.ToArray());
         }
-        public static void OverwriteSave(string filePath, string[] document)
+        public static void Save<T>(T xmlFile, string filePath)
         {
-            AndItsGone(filePath);
+            try
+            {
+                // Prepare variables
+                string output = "";
+                XmlSerializer xS = new XmlSerializer(typeof(T));
+                // String writer is used to satisfied the stream requirement
+                // for serialization
+                using (UTF8_StringWriter sW = new())
+                {
+                    // Get the Xml string
+                    xS.Serialize(sW, xmlFile);
+                    output = sW.ToString();
+                    // Setup to format the string
+                    MemoryStream mS = new();
+                    XmlTextWriter xT = new(mS, Encoding.UTF8);
+                    XmlDocument d = new();
+                    // Load the xml string into the xml document
+                    d.LoadXml(output);
+                    xT.Formatting = Formatting.Indented;
+                    // Write the xml document into a formatting xmlTextwriter
+                    d.WriteContentTo(xT);
+                    xT.Flush();
+                    mS.Flush();
+                    // Rewind the memory stream to read contents
+                    mS.Position = 0;
+                    // Read MemoryStream content into streamReader
+                    using (StreamReader sR = new(mS))
+                        output = sR.ReadToEnd();
+                }
+                using (StreamWriter sW = new(filePath))
+                    sW.Write(output);
+            }
+            catch (XmlException xmlEx)
+            {
+                Console.WriteLine(xmlEx);
+            }
+        }
+        public static void Save(string filePath, string[] document, bool overwrite)
+        {
+            if (!File.Exists(filePath))
+                Save(filePath, document);
+            if (overwrite)
+                AndItsGone(filePath);
             Save(filePath, document);
         }
-        public static void OverwriteSave(string filePath, string[][] document)
+        public static void Save(string filePath, string[][] document, bool overwrite)
         {
-            AndItsGone(filePath);
+            if (!File.Exists(filePath))
+                Save(filePath, document);
+            if (overwrite)
+                AndItsGone(filePath);
             Save(filePath, document);
         }
-        public static string GetAsXml<T>(T xmlModel)
+        #endregion
+
+        #region Load Methods
+        /// <summary>
+        /// Loads a string array from the filePatj
+        /// </summary>
+        public static string[] Load(string filePath)
+        {
+            List<string> result = new();
+            using (StreamReader sr = new(filePath))
+            {
+                string line;
+                while ((line = sr.ReadLine()) != null)
+                    result.Add(line);
+            }
+            return result.ToArray();
+        }
+        /// <summary>
+        /// Load XML File
+        /// </summary>
+        public static T? Load<T>(string filePath)
+        {
+            // Make sure the file exists or return a default value
+            if (!File.Exists(filePath))
+                return default(T);
+
+            using (TextReader tR = new StreamReader(filePath))
+            {
+                using (XmlTextReader xR = new(tR))
+                {
+                    XmlSerializer xS = new XmlSerializer(typeof(T));
+                    return (T?)xS.Deserialize(xR);
+                }
+            }
+        }
+        #endregion
+
+        #region Xml Methods
+        /// <summary>
+        /// Converts the xmlModel to a string for file creation
+        /// </summary>
+        public static string GetAsXml<T>(T xmlModel, bool indented = false)
         {
 
             string output = "";
@@ -72,7 +145,7 @@ namespace CumminsEcmEditor.Tools
                 XmlDocument d = new();
                 // Load the xml string into the xml document
                 d.LoadXml(output);
-                xT.Formatting = Formatting.Indented;
+                xT.Formatting = indented ? Formatting.Indented : Formatting.None;
                 // Write the xml document into a formatting xmlTextwriter
                 d.WriteContentTo(xT);
                 xT.Flush();
@@ -85,6 +158,9 @@ namespace CumminsEcmEditor.Tools
             }
             return output;
         }
+        /// <summary>
+        /// Currently only used to serialize the xcal header.
+        /// </summary>
         public static string XmlSerialize<T>(T entity) where T : class
         {
             // removes version
@@ -103,11 +179,18 @@ namespace CumminsEcmEditor.Tools
                 return sw.ToString(); // Your XML
             }
         }
-        private static void AndItsGone(string filePath)
+        #endregion
+
+        #region Private Methods
+        /// <summary>
+        /// What a nice file you have there...
+        /// </summary>
+        private static void AndItsGone(string filePath) 
         {
             if (File.Exists(filePath))
                 File.Delete(filePath);
         }
+        #endregion
     }
     public class UTF8_StringWriter : StringWriter
     {

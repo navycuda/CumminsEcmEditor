@@ -76,7 +76,6 @@ namespace CumminsEcmEditor.IntelHex
             string filePath = FilePath.Replace(".XCAL", "");
             filePath += "_mod.XCAL";
             List<string> header = new();
-            int headerLines = 0;
             if (CheckSum != null)
                 header.Add(CheckSum);
             if (Header != null)
@@ -84,12 +83,7 @@ namespace CumminsEcmEditor.IntelHex
             calibration[0] = header.ToArray();
             calibration[1] = GetIntelHexRecords();
 
-            if (overwrite)
-            {
-                EcmFiles.OverwriteSave(filePath, calibration);
-                return;
-            }
-            EcmFiles.Save(filePath, calibration);
+            EcmFiles.Save(filePath, calibration, overwrite);
         }
         public XCalByteOrder GetByteOrder()
         {

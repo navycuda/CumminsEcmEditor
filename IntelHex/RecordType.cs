@@ -1,6 +1,6 @@
 ﻿namespace CumminsEcmEditor.IntelHex
 {
-    public enum XCalRecordType
+    public enum RecordType
     {
         Data = 0x00,
         EndOfFile = 0x01,

@@ -65,6 +65,6 @@ namespace CumminsEcmEditor.Tools.Extensions
         public static int GetStartingAbsoluteAddress(this Record[] r) =>
             r.GetFirstRecord().GetAbsoluteStartAddress();
         public static Record GetFirstRecord(this Record[] r) =>
-            r.Where(r => r.GetRecordType() == XCalRecordType.Data).First();
+            r.Where(r => r.GetRecordType() == RecordType.Data).First();
     }
 }

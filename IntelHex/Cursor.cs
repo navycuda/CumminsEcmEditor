@@ -112,7 +112,7 @@ namespace CumminsEcmEditor.IntelHex
             while (!CurrentRecord.HasAbsoluteAddress(Address))
             {
                 IndexPosition++;
-                if (CurrentRecord.GetRecordType() == XCalRecordType.EndOfFile)
+                if (CurrentRecord.GetRecordType() == RecordType.EndOfFile)
                 {
                     IndexPosition = 0;
                     Address = CurrentRecord.GetAbsoluteStartAddress();

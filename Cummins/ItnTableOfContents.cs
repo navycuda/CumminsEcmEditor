@@ -17,7 +17,7 @@ namespace CumminsEcmEditor.Cummins
         private int Address { get; set; }
         private int PackedRecords { get; set; }
         private int UnpackedRecords { get; set; }
-        private ItnEngineParameter[] Parameters { get; set; }
+        private Itn[] Contents { get; set; }
         private XCalByteOrder ByteOrder { get; set; }
         #endregion
 
@@ -31,9 +31,9 @@ namespace CumminsEcmEditor.Cummins
             Console.SetCursorPosition(0, 20);
             for (int i = 0; i < 24; i++)
             {
-                string id = "0x" + Parameters[i].Id.IntToHex(4);
-                string address = "0x" + Parameters[i].AbsoluteAddress.IntToHex(4);
-                int length = Parameters[i].ByteCount;
+                string id = "0x" + Contents[i].Id.IntToHex(4);
+                string address = "0x" + Contents[i].AbsoluteAddress.IntToHex(4);
+                int length = Contents[i].ByteCount;
 
                 Console.WriteLine($"{id} : {address} : {length}");
             }
@@ -67,27 +67,14 @@ namespace CumminsEcmEditor.Cummins
             // absolute Address : Byte Count
             int elements = UnpackedRecords * 2;
             //Prepare the parameter array
-            Parameters = new ItnEngineParameter[UnpackedRecords];
+            Contents = new Itn[UnpackedRecords];
             // Read the matt table
             byte[][] mattTable = XCal.Cursor.Read(address, 4, elements);
             // Populate the parameters
             for (int i = 0; i < elements; i += 2)
-                Parameters[i / 2] = new(unpackedRecordIds[i / 2],
+                Contents[i / 2] = new(unpackedRecordIds[i / 2],
                                       mattTable[i].ToInt(ByteOrder),
                                       mattTable[i + 1].ToInt(ByteOrder));
-        }
-    }
-    public class ItnEngineParameter
-    {
-        public int Id { get; set; }
-        public int AbsoluteAddress { get; set; }
-        public int ByteCount { get; set; }
-
-        public ItnEngineParameter(int id, int absoluteAddress, int byteCount)
-        {
-            Id = id;
-            AbsoluteAddress = absoluteAddress;
-            ByteCount = byteCount;
         }
     }
 }

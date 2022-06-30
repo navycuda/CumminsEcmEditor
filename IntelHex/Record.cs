@@ -50,13 +50,7 @@ namespace CumminsEcmEditor.IntelHex
 
         #region Private Properties
         private byte RecordLength { get; set; }
-        /// <summary>
-        /// This is the 16bit address for this record. ie 0x____802C
-        /// </summary>
         private int Address { get; set; }
-        /// <summary>
-        /// This is the intel Hex386 Address. ie 0x8002____
-        /// </summary>
         private int ExtendedLinearAddress { get; set; }
         private byte RecordType { get; set; }
         private byte[] Data { get; set; }
@@ -79,7 +73,7 @@ namespace CumminsEcmEditor.IntelHex
             RecordLength = hexLine[1..3].HexToByte();
             Address = hexLine[3..7].HexToInt();
             RecordType = hexLine[7..9].HexToByte();
-            if (GetRecordType() == XCalRecordType.ExtendedLinearAddress)
+            if (GetRecordType() == IntelHex.RecordType.ExtendedLinearAddress)
                 ExtendedLinearAddress = hexLine[9..(9 + 4)].HexToInt() << 16;
             else
                 ExtendedLinearAddress = extendedLinearAddress;
@@ -108,7 +102,7 @@ namespace CumminsEcmEditor.IntelHex
 
             if (absoluteAddress <= absEnd && 
                 absoluteAddress >= absStart &&
-                GetRecordType() == XCalRecordType.Data)
+                GetRecordType() == IntelHex.RecordType.Data)
                 pos = absoluteAddress - absStart;
 
             return pos;
@@ -126,8 +120,8 @@ namespace CumminsEcmEditor.IntelHex
             ExtendedLinearAddress + Address;
         public int GetAbsoluteEndAddress() =>
             ExtendedLinearAddress + Address + (RecordLength > 0 ? RecordLength - 1 : 0 );
-        public XCalRecordType GetRecordType() =>
-            (XCalRecordType)RecordType;
+        public RecordType GetRecordType() =>
+            (RecordType)RecordType;
         public bool HasAbsoluteAddress(int absoluteAddress) =>
             GetPosition(absoluteAddress) != null;
         public byte? GetDataByte(int absoluteAddress)
