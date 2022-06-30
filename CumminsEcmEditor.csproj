@@ -12,4 +12,9 @@
     <None Remove="ConsoleEditor\**" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="CumminsEcmEditor.pod" />
+    <None Remove="EcmEditorFlowishChart.odg" />
+  </ItemGroup>
+
 </Project>
