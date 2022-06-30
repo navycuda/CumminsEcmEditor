@@ -1,4 +1,5 @@
-﻿using CumminsEcmEditor.Tools;
+﻿using CumminsEcmEditor.Cummins;
+using CumminsEcmEditor.Tools;
 using CumminsEcmEditor.Tools.Extensions;
 
 using System;
@@ -22,6 +23,7 @@ namespace CumminsEcmEditor.IntelHex
 
         #region Properites
         public Cursor Cursor { get; set; }
+        public ItnTableOfContents TableOfContents { get; set; }
         #endregion
 
         #region Constructor
@@ -61,6 +63,9 @@ namespace CumminsEcmEditor.IntelHex
             // Set the CheckSum, if the file is not headerless
 
             GetXmlHeader(headers.ToArray());
+
+            // Must be assembled last, after calibration has been loaded.
+            TableOfContents = new(this);
         }
         #endregion
 
@@ -86,6 +91,15 @@ namespace CumminsEcmEditor.IntelHex
             }
             EcmFiles.Save(filePath, calibration);
         }
+        public XCalByteOrder GetByteOrder()
+        {
+            if (Header == null)
+                return XCalByteOrder.LittleEndian;
+            else if (Header.byte_order == "LittleEndian")
+                return XCalByteOrder.LittleEndian;
+            return XCalByteOrder.BigEndian;
+        }
+        public int GetTableOfContentsAddress() => Header.index_table_address.HexToInt();
         #endregion
 
         #region Private Methods
@@ -112,5 +126,10 @@ namespace CumminsEcmEditor.IntelHex
             }
         }
         #endregion
+    }
+    public enum XCalByteOrder
+    {
+        LittleEndian = 0x00,
+        BigEndian = 0x01,
     }
 }
