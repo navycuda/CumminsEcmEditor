@@ -72,6 +72,12 @@ namespace CumminsEcmEditor.Tools
                 Console.WriteLine(xmlEx);
             }
         }
+        public static void Save<T>(T xmlFile, string filePath, bool overwrite)
+        {
+            if (overwrite)
+                AndItsGone(filePath);
+            Save(xmlFile, filePath);
+        }
         public static void Save(string filePath, string[] document, bool overwrite)
         {
             if (!File.Exists(filePath))

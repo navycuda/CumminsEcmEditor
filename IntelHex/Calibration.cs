@@ -64,6 +64,7 @@ namespace CumminsEcmEditor.IntelHex
 
             GetXmlHeader(headers.ToArray());
 
+
             // Must be assembled last, after calibration has been loaded.
             TableOfContents = new(this);
         }

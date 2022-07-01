@@ -40,18 +40,12 @@ namespace CumminsEcmEditor.Cummins
         #endregion
 
         #region Methods
-        public void Save(string filePath)
-        {
-            if (File.Exists(filePath))
-                return;
+        public EngineParameter[] GetParameters() =>
+            Parameters.OrderBy(p => p.GetId()).ToArray();
+        public void Save(string filePath) =>
             EcmFiles.Save(this, filePath);
-        }
-        public void Overwrite(string filePath)
-        {
-            if (File.Exists(filePath))
-                File.Delete(filePath);
-            Save(filePath);
-        }
+        public void Overwrite(string filePath) =>
+            EcmFiles.Save(this, filePath, true);
         public void TESTING_OutputToConsole()
         {
             Console.WriteLine($"{Version} : {Checksum} :: {Description}");
