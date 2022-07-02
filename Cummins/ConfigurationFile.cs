@@ -25,14 +25,16 @@ namespace CumminsEcmEditor.Cummins
 
         #region Xml Elements
         [XmlElement("compatibility_header")]
-        public CompatibilityHeader Header { get; set; }
+        public EcmCompatibilityHeader Header { get; set; }
         [XmlElement("parameter")]
-        public EngineParameter[] Parameters { get; set; }
+        public EcmParameter[] Parameters { get; set; }
+        [XmlElement("group")]
+        public EcmGroup Groups { get; set; }
         #endregion
 
         #region Constructors
         public ConfigurationFile() { }
-        public ConfigurationFile(string moduleName, EngineParameter[] parameters)
+        public ConfigurationFile(string moduleName, EcmParameter[] parameters)
         {
             Header = new() { module_name = moduleName };
             Parameters = parameters;
@@ -40,7 +42,7 @@ namespace CumminsEcmEditor.Cummins
         #endregion
 
         #region Methods
-        public EngineParameter[] GetParameters() =>
+        public EcmParameter[] GetParameters() =>
             Parameters.OrderBy(p => p.GetId()).ToArray();
         public void Save(string filePath) =>
             EcmFiles.Save(this, filePath);
@@ -49,7 +51,7 @@ namespace CumminsEcmEditor.Cummins
         public void TESTING_OutputToConsole()
         {
             Console.WriteLine($"{Version} : {Checksum} :: {Description}");
-            PropertyInfo[] properties = typeof(CompatibilityHeader).GetProperties();
+            PropertyInfo[] properties = typeof(EcmCompatibilityHeader).GetProperties();
             Console.WriteLine("Compatibility Header:");
             foreach (PropertyInfo p in properties)
                 Console.WriteLine($"\t{p.Name.PadLeft(32)} = {p.GetValue(Header)}");
@@ -60,7 +62,7 @@ namespace CumminsEcmEditor.Cummins
         public void TESTING_AllItnsToConsole()
         {
             Parameters = Parameters.OrderBy(p => p.GetId()).ToArray();
-            foreach (EngineParameter e in Parameters)
+            foreach (EcmParameter e in Parameters)
             {
                 Console.WriteLine($"{e.id} : {e.name}");
             }
@@ -91,9 +93,9 @@ namespace CumminsEcmEditor.Cummins
                     index_table_address = "8002002C",
                     file_descriptor = "descriptor"
                 },
-                Parameters = new EngineParameter[]
+                Parameters = new EcmParameter[]
                 {
-                    new EngineParameter()
+                    new EcmParameter()
                     {
                         name = "C_ITN_Fixed_Point",
                         id = "00",
@@ -113,7 +115,7 @@ namespace CumminsEcmEditor.Cummins
                         access_method = "access method",
                         group_ids = "0"
                     },
-                    new EngineParameter()
+                    new EcmParameter()
                     {
                         name = "C_ITN_Floating_Point",
                         id = "01",
@@ -131,7 +133,7 @@ namespace CumminsEcmEditor.Cummins
                         access_method = "access method",
                         group_ids = "0"
                     },
-                    new EngineParameter()
+                    new EcmParameter()
                     {
                         name = "C_ITN_Code",
                         id = "02",
@@ -145,7 +147,7 @@ namespace CumminsEcmEditor.Cummins
                         access_method = "access method",
                         group_ids = "0"
                     },
-                    new EngineParameter()
+                    new EcmParameter()
                     {
                         name = "C_ITN_Block",
                         id = "03",
@@ -159,7 +161,7 @@ namespace CumminsEcmEditor.Cummins
                         access_method = "access method",
                         group_ids = "0"
                     },
-                    new EngineParameter()
+                    new EcmParameter()
                     {
                         name = "C_ITN_X_Axis",
                         id = "04",
@@ -182,7 +184,7 @@ namespace CumminsEcmEditor.Cummins
                         access_method = "access method",
                         group_ids = "0"
                     },
-                    new EngineParameter()
+                    new EcmParameter()
                     {
                         name = "C_ITN_Y_Axis",
                         id = "05",
@@ -205,7 +207,7 @@ namespace CumminsEcmEditor.Cummins
                         access_method = "access method",
                         group_ids = "0"
                     },
-                    new EngineParameter()
+                    new EcmParameter()
                     {
                         name = "C_ITN_Z_Axis",
                         id = "06",
@@ -228,7 +230,7 @@ namespace CumminsEcmEditor.Cummins
                         access_method = "access method",
                         group_ids = "0"
                     },
-                    new EngineParameter()
+                    new EcmParameter()
                     {
                         name = "C_ITN_Table",
                         id = "07",
@@ -251,7 +253,7 @@ namespace CumminsEcmEditor.Cummins
                         access_method = "access method",
                         group_ids = "0"
                     },
-                    new EngineParameter()
+                    new EcmParameter()
                     {
                         name = "C_ITN_Enumeration",
                         id = "08",
@@ -270,7 +272,7 @@ namespace CumminsEcmEditor.Cummins
                         access_method = "access method",
                         group_ids = "0"
                     },
-                    new EngineParameter()
+                    new EcmParameter()
                     {
                         name = "C_ITN_Integer",
                         id = "09",
@@ -286,7 +288,7 @@ namespace CumminsEcmEditor.Cummins
                         access_method = "access method",
                         group_ids = "0"
                     },
-                    new EngineParameter()
+                    new EcmParameter()
                     {
                         name = "C_ITN_Structure",
                         id = "0A",
@@ -300,7 +302,7 @@ namespace CumminsEcmEditor.Cummins
                         access_method = "access method",
                         group_ids = "0"
                     },
-                    new EngineParameter()
+                    new EcmParameter()
                     {
                         name = "C_ITN_String",
                         id = "0B",
@@ -314,7 +316,7 @@ namespace CumminsEcmEditor.Cummins
                         access_method = "access method",
                         group_ids = "0"
                     },
-                    new EngineParameter()
+                    new EcmParameter()
                     {
                         name = "C_ITN_Array",
                         id = "0C",
@@ -347,7 +349,7 @@ namespace CumminsEcmEditor.Cummins
                         access_method = "access method",
                         group_ids = "0"
                     },
-                    new EngineParameter()
+                    new EcmParameter()
                     {
                         name = "C_ITN_Contiguous_Structure",
                         id = "0D",
@@ -388,7 +390,7 @@ namespace CumminsEcmEditor.Cummins
                         access_method = "access method",
                         group_ids = "0"
                     },
-                    new EngineParameter()
+                    new EcmParameter()
                     {
                         name = "C_ITN_Date_Time_Stamp",
                         id = "0E",
@@ -402,7 +404,7 @@ namespace CumminsEcmEditor.Cummins
                         access_method = "access method",
                         group_ids = "0"
                     },
-                    new EngineParameter()
+                    new EcmParameter()
                     {
                         name = "C_ITN_Dynamic",
                         id = "0F",
@@ -417,9 +419,11 @@ namespace CumminsEcmEditor.Cummins
             };
         #endregion
     }
+
+    #region Compatibility Header
     [Serializable]
     [XmlRoot(ElementName = "compatibility_header", Namespace = "http://www.electronics.cummins.com/eti/I")]
-    public class CompatibilityHeader
+    public class EcmCompatibilityHeader
     {
         public string calibration_version { get; set; }
         public string module_name { get; set; }
@@ -435,11 +439,24 @@ namespace CumminsEcmEditor.Cummins
         public string index_table_address { get; set; }
         public string file_descriptor { get; set; }
     }
+    #endregion
+    
+    #region Groups
+    [Serializable]
+    [XmlRoot(ElementName = "group", Namespace = "http://www.electronics.cummins.com/eti/I")]
+    public class EcmGroup
+    {
+        [XmlElement(ElementName = "name")]
+        public string Name { get; set; }
+        [XmlElement(ElementName = "description")]
+        public string Description { get; set; }
+    }
+    #endregion
 
-    #region Parameter Classes
+    #region Parameter
     [Serializable]
     [XmlRoot(ElementName = "parameter", Namespace = "http://www.electronics.cummins.com/eti/I")]
-    public class EngineParameter
+    public class EcmParameter
     {
         [XmlAttribute()]
         public string name { get; set; }
@@ -626,4 +643,6 @@ namespace CumminsEcmEditor.Cummins
     [XmlType(Namespace = "http://www.electronics.cummins.com/eti/I")]
     public class Dynamic : DataType { }
     #endregion
+
+
 }

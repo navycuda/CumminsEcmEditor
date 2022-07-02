@@ -8,7 +8,7 @@ namespace CumminsEcmEditor.Cummins
         public int Id { get; set; }
         public int AbsoluteAddress { get; set; }
         public int ByteCount { get; set; }
-        public EngineParameter? Parameter { get; set; }
+        public EcmParameter? Parameter { get; set; }
         #endregion
 
         #region Constructor

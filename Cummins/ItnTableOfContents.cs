@@ -19,10 +19,10 @@ namespace CumminsEcmEditor.Cummins
         private int Address { get; set; }
         private int PackedRecords { get; set; }
         private int UnpackedRecords { get; set; }
-
         private XCalByteOrder ByteOrder { get; set; }
         #endregion
 
+        #region Constructor
         public ItnTableOfContents(Calibration xCal)
         {
             XCal = xCal;
@@ -40,12 +40,14 @@ namespace CumminsEcmEditor.Cummins
                 Console.WriteLine($"{id} : {address} : {length}");
             }
         }
+        #endregion
 
+        #region Public Methods
         public void ApplyConfiguration(string ecfgPath)
         {
             // Load the configuration
             Configuration = ConfigurationFile.Load(ecfgPath);
-            EngineParameter[] parameters = Configuration.GetParameters();
+            EcmParameter[] parameters = Configuration.GetParameters();
             // prepare a counter for the configuration list
             int config = 0;
 
@@ -75,6 +77,9 @@ namespace CumminsEcmEditor.Cummins
             }
 
         }
+        #endregion
+        
+        #region Private Methods
         private int[] GetPackedItnRecords()
         {
             List<int> recordIds = new();
@@ -114,5 +119,6 @@ namespace CumminsEcmEditor.Cummins
             // Sort for good measure
             Contents = Contents.OrderBy(c => c.Id).ToArray();
         }
+        #endregion
     }
 }
