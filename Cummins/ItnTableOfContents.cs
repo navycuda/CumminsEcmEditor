@@ -79,6 +79,10 @@ namespace CumminsEcmEditor.Cummins
         }
         public Itn? GetItnById(int id) =>
             Contents.Where(i => i.Id == id).FirstOrDefault();
+        public byte[][] GetData(int absoluteAddress, int bytes, int elements) =>
+            XCal.Cursor.Read(absoluteAddress, bytes, elements);
+        public byte[] GetData(int absoluteAddress, int bytes) =>
+            XCal.Cursor.Read(absoluteAddress, bytes);
         #endregion
         
         #region Private Methods

@@ -1,4 +1,5 @@
-﻿using CumminsEcmEditor.IntelHex;
+﻿using CumminsEcmEditor.Cummins;
+using CumminsEcmEditor.IntelHex;
 
 using System;
 using System.Collections.Generic;
