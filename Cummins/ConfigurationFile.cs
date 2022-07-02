@@ -560,6 +560,14 @@ namespace CumminsEcmEditor.Cummins
         public string legacy_style { get; set; }
         public string element_count { get; set; }
         public string related_x_axis_id { get; set; }
+        public int GetXAxisId()
+        {
+            int output;
+            if (int.TryParse(related_x_axis_id, out output))
+                return output;
+            return 0;
+        }
+            
     }
     [Serializable]
     [XmlType(Namespace = "http://www.electronics.cummins.com/eti/I")]

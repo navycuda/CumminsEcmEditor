@@ -53,5 +53,33 @@ namespace CumminsEcmEditor.Tools.Extensions
                 return b.Reverse().ToArray().ByteToHex();
             return b.ByteToHex();
         }
+        public static string ToPaddedString(this string input, int length)
+        {
+            string output = "";
+            for (int i = 0; i < length; i++)
+            {
+                if (i < input.Length)
+                    output += input[i];
+                else
+                    output += ' ';
+            }
+            return output;
+        }
+        public static string ToDocumentSafe(this string input)
+        {
+            int length = input.Length;
+            string result = "";
+
+            foreach (char c in input)
+            {
+                if (char.IsControl(c) ||
+                    c == '\n' ||
+                    c == '\r' ||
+                    c == '\t')
+                    continue;
+                result += c;
+            }
+            return result;
+        }
     }
 }

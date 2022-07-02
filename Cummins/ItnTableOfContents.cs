@@ -77,6 +77,8 @@ namespace CumminsEcmEditor.Cummins
             }
 
         }
+        public Itn? GetItnById(int id) =>
+            Contents.Where(i => i.Id == id).FirstOrDefault();
         #endregion
         
         #region Private Methods
