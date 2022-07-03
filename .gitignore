@@ -1,6 +1,7 @@
 .vs/
-obj/
 bin/
+obj/
 ConsoleEditor/.vs/
-ConsoleEditor/obj/
 ConsoleEditor/bin/
+ConsoleEditor/obj/
+CumminsEcmEditor-workspace.code-workspace
