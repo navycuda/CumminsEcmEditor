@@ -26,10 +26,6 @@ namespace CumminsEcmEditor.Cummins
         }
         #endregion
 
-        #region Methods
-
-        #endregion
-
         #region Get Methods
         public string GetHexId() =>
             $"0x{Id.IntToHex(4)}";
@@ -166,16 +162,35 @@ namespace CumminsEcmEditor.Cummins
         private string GetComment() =>
             HasParameter() ? Parameter.description.ToDocumentSafe() : GetUnlistedComment();
         private string GetUnlistedComment() =>
-            $"Unlisted Engine Parameter - {GetByteCount()}";
+            $"{GetByteCount().PadLeft(4)} Unlisted Engine Parameter";
         private string GetUnitsFromDataType()
         {
-            string output
             DataType dT = Parameter.data_type;
-            if (dT is Fixed_Point fP)
+            if (dT is Floating_Point fP)
                 return fP.engr_units;
-            else if (dT is Fixed_Point xP)
+            if (dT is Fixed_Point xP)
                 return xP.engr_units;
-            return "";
+            if (dT is X_Axis xA)
+                if (xA.x_element_type is Floating_Point xFP)
+                    return xFP.engr_units;
+                else if (xA.x_element_type is Fixed_Point xXP)
+                    return xXP.engr_units;
+            if (dT is Y_Axis yA)
+                if (yA.y_element_type is Floating_Point yFP)
+                    return yFP.engr_units;
+                else if (yA.y_element_type is Fixed_Point yXP)
+                    return yXP.engr_units;
+            if (dT is Z_Axis zA)
+                if (zA.z_element_type is Floating_Point zFP)
+                    return zFP.engr_units;
+                else if (zA.z_element_type is Fixed_Point zXP)
+                    return zXP.engr_units;
+            if (dT is Table t)
+                if (t.element_type is Floating_Point tFP)
+                    return tFP.engr_units;
+                else if (t.element_type is Fixed_Point tXP)
+                    return tXP.engr_units;
+            return "...";
         }
         private string[] GetAsTable()
         {
@@ -199,7 +214,9 @@ namespace CumminsEcmEditor.Cummins
                 $"  Y: {GetName()} ({GetUnitsFromDataType()}) - {GetComment()}",
                 $"  " + "X".PadLeft(12) + " " + "Y".PadLeft(12),
             };
-
+            bool xCount;
+            bool yCount;
+            if (xAxis.GetElementCount(out xCount) == GetElementCount(out yCount))
 
 
 
