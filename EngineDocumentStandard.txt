@@ -1,0 +1,99 @@
+===========================================================================================
+Calibration Document Report
+	Data: <Calibration FilePath>
+	Config: <Configuration FilePath>
+===========================================================================================
+
+FilterFileName: <filterFile?>
+
+Report Generated: <DateTime.Now>
+
+
+===========================================================================================
+Parameter Report
+
+===========================================================================================
+Subfile: 8
+===========================================================================================
+
+<Group Or Manager(As sorted)>
+Name                                             Value        Units      Itn        Comment
+-------------------------------------------------------------------------------------------
+
+~ UL_ITN_0x00000001                                001A002C     HEX        0x00000001 An imaginary itn to help
+  UL_ITN_0x00000002                                5.00         Deg/C      0x00000002 demonstrate the document
+▲ ▲                                              ▲ ▲          ▲ ▲        ▲ ▲        ▲ ▲
+│ ├──────────────────────────────────────────────┤ ├──────────┤ ├────────┤ ├────────┤ ├────────────▶
+│ │ Parameter Name                               │ │UserValue │ │UnitType│ │Itn #   │ │Comment
+│ │ 48 char                                      │ │12 char   │ │10 char │ │10 char │ │Remove special characters
+│ ╰──────────────────────────────────────────────╯ ╰──────────╯ ╰────────╯ ╰────────╯ ╰────────────▶
+╰── Parameter Marked as Modified with '~'
+One ' ' between each column.
+
+*****
+  ...
+  UL_ITN_0x00000003                                10           Counts     0x00000003 One empty line after the itn before a DataType.Y_Axis
+
+  X: UL_ITN_0x00000004 <units> - <Comment>
+  Y: UL_ITN_0x00000005 <units> - <Comment>
+             X            Y
+             0        75.00
+          2512        75.00
+          4288        75.00
+          5072        75.00
+          5632        75.00
+          6352        75.00
+          7072        75.00
+          7552        75.00
+          8096        75.00
+  ▲          ▲ ▲          ▲
+  ├──────────┤ ├──────────┤
+  │TableValue│ │TableValue│
+  │12 char   │ │12 char   │
+  ╰──────────╯ ╰──────────╯
+
+  UL_ITN_0x00000006                                10           Counts     0x00000006 One empty line before the itn after a DataType.Y_Axis
+  ...
+*****
+  ...
+  UL_ITN_0x00000007                                10           Counts     0x00000007 One empty line after the itn before a DataType.Z_Axis
+
+  X: UL_ITN_0x00000008 <units> - <Comment>
+  Y: UL_ITN_0x00000009 <units> - <Comment>
+  Z: UL_ITN_0x0000000A <units> - <Comment>
+
+  ------------------------------------------------------------------------
+               |       0.7002 |       0.7500 |       0.7900 |       0.8110  ◀── Y_Axis Value
+  ------------------------------------------------------------------------
+             0 |       400.00 |       400.00 |       400.00 |       400.00 
+  ------------------------------------------------------------------------
+           600 |       400.00 |       400.00 |       400.00 |       400.00 
+  ------------------------------------------------------------------------
+           900 |       400.00 |       400.00 |       400.00 |       400.00 
+  ------------------------------------------------------------------------
+          1100 |       400.00 |       400.00 |       400.00 |       400.00 
+  ------------------------------------------------------------------------
+  ▲          ▲   ▲          ▲   ▲          ▲   ▲          ▲   ▲          ▲
+  ├──────────┤   ├──────────┤   ├──────────┤   ├──────────┤   ├──────────┤
+  │XAxisValue│   │TableValue│   │TableValue│   │TableValue│   │TableValue│
+  │12 char   │   │12 char   │   │12 char   │   │12 char   │   │12 char   │
+  ╰──────────╯   ╰──────────╯   ╰──────────╯   ╰──────────╯   ╰──────────╯
+
+  UL_ITN_0x0000000B                                10           Counts     0x0000000B One empty line before the itn after a DataType.Z_Axis
+  ...
+*****
+
+Questions:
+    How are modified Y and Z axis tables marked as modifed?
+
+Notes:
+    Column sizing following how I understand our conversation.
+
+Additional Changes:
+    Resize Group/Manager Header to modified columns
+    Resize Seperator "=" to match group/manager columns
+
+Thoughts:
+
+    For parsing, now with the itn included the only two data points that need to be extracted are the itn number and the value
+    then convert back to hex.
