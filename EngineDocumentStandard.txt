@@ -96,4 +96,4 @@ Additional Changes:
 Thoughts:
 
     For parsing, now with the itn included the only two data points that need to be extracted are the itn number and the value
-    then convert back to hex.
+    to convert back to hex.
