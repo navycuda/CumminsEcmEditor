@@ -1,4 +1,5 @@
 ﻿using CumminsEcmEditor.IntelHex;
+using CumminsEcmEditor.Tools;
 using CumminsEcmEditor.Tools.Extensions;
 
 using System;
@@ -74,7 +75,28 @@ namespace CumminsEcmEditor.Cummins
         #endregion
 
         #region Document Methods
-        public void PrepareDocument()
+        public void Save()
+        {
+            // Generate the Document
+            GenerateDocument();
+            // Save the Document
+            // set the documentPath, alongside the .xcal
+            string docPath = XCal.GetXCalPath().Replace(".XCAL","_Doc.txt");
+            EcmFiles.Save(docPath, Document.ToArray(), true);
+            // Clear the document to save memory
+            Document.Clear();
+        } 
+        #endregion
+
+        #region Private Document Methods
+        private void GenerateDocument()
+        {
+            // Generates the Header, (re)sets List<string> Document
+            PrepareDocument();
+            // Documents and adds the Itns to the document.
+            DocumentItns();
+        }
+        private void PrepareDocument()
         {
             // Start a new Document
             Document = new List<string>();
@@ -87,12 +109,52 @@ namespace CumminsEcmEditor.Cummins
             AddFilePaths();
             AddDivider(D_HeaderLineDelineator);
             // report details
-            AddDetails();
+            // what additional details could go here?
+            // what is the filter file
+            AddReportDetails();
+            AddDivider(D_HeaderLineDelineator);
+            // Parameter Report Area
+            AddParameterReport();
+            AddDivider(D_HeaderLineDelineator);
+            // SubFile Area
+            // What is a subfile number?  
+            AddSubFile(8);
+            AddDivider(D_HeaderLineDelineator);
+            // Temporary... Add one Titled divider as a legend.
+            // Eventually the divider will be used as part of
+            // the sort methodology.
+            AddTitledDivider("Itn Legend");
+        }
+        private void DocumentItns()
+        {
+            Itn[] itns = XCal.TableOfContents.GetAllItns(SortItnsBy.None);
+            // Currently only adding single value itns.
+            foreach (Itn itn in itns)
+                if (itn.IsSingleValue())
+                    AddParameterString(
+                        itn.GetName(),
+                        "...",
+                        itn.GetUnits(),
+                        itn.GetHexId(),
+                        itn.GetComment(),
+                        itn.IsModified
+                        );
+            // Add short divider and record count
+            AddDivider(A_RowDelineator, 31);
+            Document.Add($"Total Records = {itns.Length}");
         }
         #endregion
 
-        #region Private Document Methods
-        private void AddDetails()
+        #region Private Document Add Methods
+        private void AddTitledDivider(string title) =>
+            Document.AddRange(new string[]{"",title,D_GroupColumnHeaders,GetDivider(A_RowDelineator),""});
+        private void AddSubFile(int number) => Document.Add($"Subfile: {number}");
+        private void AddParameterReport()
+        {
+            Document.Add("Parameter Report");
+            Document.Add("");
+        }
+        private void AddReportDetails()
         {
             Document.Add("");
             Document.Add($"FilterFileName: {FilterPath}");
@@ -101,13 +163,10 @@ namespace CumminsEcmEditor.Cummins
             Document.Add("");
             Document.Add("");
         }
-        private void AddDivider(char divider)
-        {
-            string result = "";
-            for (int i = 0; i < D_DividerLength; i++)
-                result += divider;
-            Document.Add(result);
-        }
+        private void AddDivider(char divider) =>
+            Document.Add(GetDivider(divider));
+        private void AddDivider(char divider, int length) =>
+            Document.Add(GetDivider(divider, length));
         private void AddTitle() => Document.Add(D_Title);
         private void AddFilePaths()
         {
@@ -117,7 +176,7 @@ namespace CumminsEcmEditor.Cummins
         private void AddParameterString(string name, string value, string units, string itn, string comment, bool marked = false)
         {
             // assign and configure variables
-            char mark = marked ? P_ParameterModified : A_ColumnDelineator;
+            char mark = marked ? P_ParameterModified : P_ColumnDelineator;
             char d = P_ColumnDelineator;
             name = name.ToPaddedString(P_PaddingName);
             value = value.ToPaddedString(P_PaddingValue);
@@ -126,6 +185,23 @@ namespace CumminsEcmEditor.Cummins
             comment = comment.ToDocumentSafe();
             // Add the parameter to the document
             Document.Add($"{mark}{d}{name}{d}{value}{d}{units}{d}{itn}{d}{comment}");
+        }
+        #endregion
+
+        #region Private Document Get Methods
+        private string GetDivider(char divider)
+        {
+            string result = "";
+            for (int i = 0; i < D_DividerLength; i++)
+                result += divider;
+            return result;
+        }
+        private string GetDivider(char divider, int length)
+        {
+            string result = "";
+            for (int i = 0; i < length; i++)
+                result += divider;
+            return result;
         }
         #endregion
     }

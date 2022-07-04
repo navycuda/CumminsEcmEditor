@@ -13,7 +13,7 @@ namespace CumminsEcmEditor.Cummins
 
         #region Private Properties
         private ItnTableOfContents ToC { get; set; }
-        private bool IsModified { get; set; }
+        public bool IsModified { get; set; }
         #endregion
 
         #region Constructor
@@ -56,21 +56,20 @@ namespace CumminsEcmEditor.Cummins
             }
             return new byte[][] { ToC.GetData(AbsoluteAddress, ByteCount) }; 
         }
-        #endregion
+        public string GetUnits()
+        {
+            string output = "...";
 
-        #region Public Document Methods
-        public string[] GetAsDocumented()
-        {
-            if (IsSingleValue())
-                return new[] { GetDocumentLine() };
-            return GetAsTable();
+            if (HasParameter())
+                if (IsSingleValue())
+                    output = GetUnitsFromDataType();
+                else
+                    output = "array";
+
+            return output;
         }
-        public string[] GetAsDeepDocumented()
-        {
-            if (IsSingleValue())
-                return new[] { GetDeepDocumentLine() };
-            return GetAsTable();
-        }
+        public string GetComment() =>
+            HasParameter() ? Parameter.description.ToDocumentSafe() : GetUnlistedComment();
         #endregion
 
         #region Private Document Methods
@@ -131,36 +130,6 @@ namespace CumminsEcmEditor.Cummins
                     return tXP.GetDataLength();
             return 0;
         }
-        // every field has a ' ' to seperate
-        // 1, 48, 12, 10 plus forced space.
-
-        // values always 12 chars, tables or otherwise
-        private string GetDocumentLine() =>
-            $"{GetParameterMarker()} {GetPaddedName()} {GetPaddedValue()} {GetPaddedUnits()} ITN{GetHexId()} {GetComment()}";
-        private string GetPaddedName() =>
-            $"{GetName()}".ToPaddedString(48);
-        private string GetPaddedValue() =>
-            $"...".ToPaddedString(12);
-        private string GetPaddedUnits()
-        {
-            string output = "...";
-
-            if (HasParameter())
-                if (IsSingleValue())
-                    output = GetUnitsFromDataType();
-                else
-                    output = "array";
-
-            return output.ToPaddedString(10);
-        }
-        private char GetParameterMarker()
-        {
-            if (IsModified)
-                return '~';
-            return ' ';
-        }
-        private string GetComment() =>
-            HasParameter() ? Parameter.description.ToDocumentSafe() : GetUnlistedComment();
         private string GetUnlistedComment() =>
             $"{GetByteCount().PadLeft(4)} Unlisted Engine Parameter";
         private string GetUnitsFromDataType()
@@ -192,56 +161,6 @@ namespace CumminsEcmEditor.Cummins
                     return tXP.engr_units;
             return "...";
         }
-        private string[] GetAsTable()
-        {
-            DataType dT = Parameter.data_type;
-
-
-
-
-            return new[] { "No table yet" };
-        }
-        private string[] GetAsYAxis()
-        {
-            // Assumes data_type is Y_axis
-            Y_Axis yAxis = (Y_Axis)Parameter.data_type;
-            Itn xAxis = ToC.GetItnById(yAxis.GetXAxisId());
-            // Prepare the table header in the construction of the string list
-            List<string> result = new List<string>()
-            {
-                $"",
-                $"  X: {xAxis.GetName()} ({xAxis.GetUnitsFromDataType()}) - {xAxis.GetComment()}",
-                $"  Y: {GetName()} ({GetUnitsFromDataType()}) - {GetComment()}",
-                $"  " + "X".PadLeft(12) + " " + "Y".PadLeft(12),
-            };
-            bool xCount;
-            bool yCount;
-            if (xAxis.GetElementCount(out xCount) == GetElementCount(out yCount))
-
-
-
-            return result.ToArray();
-        }
-        private string[] GetAsZAxis()
-        {
-            // Assumes data_type is Z_axis
-            List<string> result = new List<string>()
-            {
-
-            };
-        }
         #endregion
-
-        #region Private Deep Document Methods
-        private string GetDeepDocumentLine()
-        {
-            return "";
-        }
-        private string[] GetAsDeepTable()
-        {
-            return new[] { "No deep table yet" };
-        }
-        #endregion
-
     }
 }

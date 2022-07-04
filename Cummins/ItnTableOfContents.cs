@@ -20,6 +20,7 @@ namespace CumminsEcmEditor.Cummins
         private int PackedRecords { get; set; }
         private int UnpackedRecords { get; set; }
         private XCalByteOrder ByteOrder { get; set; }
+        private string EcfgPath { get; set; }
         #endregion
 
         #region Constructor
@@ -45,8 +46,9 @@ namespace CumminsEcmEditor.Cummins
         #region Public Methods
         public void ApplyConfiguration(string ecfgPath)
         {
+            EcfgPath = ecfgPath;
             // Load the configuration
-            Configuration = ConfigurationFile.Load(ecfgPath);
+            Configuration = ConfigurationFile.Load(EcfgPath);
             EcmParameter[] parameters = Configuration.GetParameters();
             // prepare a counter for the configuration list
             int config = 0;
@@ -77,12 +79,17 @@ namespace CumminsEcmEditor.Cummins
             }
 
         }
+        public Itn[] GetAllItns(SortItnsBy sortedBy)
+        {
+                return Contents;
+        }
         public Itn? GetItnById(int id) =>
             Contents.Where(i => i.Id == id).FirstOrDefault();
         public byte[][] GetData(int absoluteAddress, int bytes, int elements) =>
             XCal.Cursor.Read(absoluteAddress, bytes, elements);
         public byte[] GetData(int absoluteAddress, int bytes) =>
             XCal.Cursor.Read(absoluteAddress, bytes);
+        public string GetEcfgPath() => EcfgPath;
         #endregion
         
         #region Private Methods
@@ -119,12 +126,23 @@ namespace CumminsEcmEditor.Cummins
             byte[][] mattTable = XCal.Cursor.Read(address, 4, elements);
             // Populate the parameters
             for (int i = 0; i < elements; i += 2)
-                Contents[i / 2] = new(unpackedRecordIds[i / 2],
-                                      mattTable[i].ToInt(ByteOrder),
-                                      mattTable[i + 1].ToInt(ByteOrder));
+                Contents[i / 2] = new(
+                    this,
+                    unpackedRecordIds[i / 2],
+                    mattTable[i].ToInt(ByteOrder),
+                    mattTable[i + 1].ToInt(ByteOrder));
             // Sort for good measure
             Contents = Contents.OrderBy(c => c.Id).ToArray();
         }
         #endregion
+    }
+    [Flags]
+    public enum SortItnsBy
+    {
+        None        = 0,
+        Manager     = 0b1,
+        Group       = 0b01,
+        Itn         = 0b001,
+        Address     = 0b0001
     }
 }

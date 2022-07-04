@@ -24,6 +24,7 @@ namespace CumminsEcmEditor.IntelHex
         #region Properites
         public Cursor Cursor { get; set; }
         public ItnTableOfContents TableOfContents { get; set; }
+        public EngineDocument Document { get; set; }
         #endregion
 
         #region Constructor
@@ -67,6 +68,8 @@ namespace CumminsEcmEditor.IntelHex
 
             // Must be assembled last, after calibration has been loaded.
             TableOfContents = new(this);
+            // Assign the Xcal a Document
+            Document = new(this);
         }
         #endregion
 
@@ -95,6 +98,7 @@ namespace CumminsEcmEditor.IntelHex
             return XCalByteOrder.BigEndian;
         }
         public int GetTableOfContentsAddress() => Header.index_table_address.HexToInt();
+        public string GetXCalPath() => FilePath;
         #endregion
 
         #region Private Methods

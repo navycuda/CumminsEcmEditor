@@ -50,4 +50,5 @@ byte[][] GenerateTestData(int elements)
     return result;
 }
 
-xCal.SaveModdedCalibration(true);
+// xCal.SaveModdedCalibration(true);
+xCal.Document.Save();

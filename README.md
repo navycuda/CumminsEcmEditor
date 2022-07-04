@@ -17,4 +17,17 @@ an orginal Cummins tool, a Dealership tool (ie Nissan Consult III), or an afterm
 
 
 <h4>ToDo:</h4>
-	
+Get Engine Documentation Working
+Import my previous ecfg library file and use that
+	Eventually have to work on a new library compiler, but for now
+	the previous ecfg I made will work with the model I copy/pasted!
+Convert WinOLS map to Cummins Engine Parameter
+	This is a tough one and I'm avoiding it as long as I can.
+
+
+<h4>ToDo:</h4>
+Questions/Thougths:
+
+Does the device installing the bin care if the data is stored as little endian or not?  Is the byte
+order relevant to the device or does it just install the bits in the order they're presented in the
+xCal?
