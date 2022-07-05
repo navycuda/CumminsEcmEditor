@@ -81,6 +81,8 @@ namespace CumminsEcmEditor.Cummins
         }
         public Itn[] GetAllItns(SortItnsBy sortedBy)
         {
+            // TO DO:
+            // Add sorting options.
                 return Contents;
         }
         public Itn? GetItnById(int id) =>

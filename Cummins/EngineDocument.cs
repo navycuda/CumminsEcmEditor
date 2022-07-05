@@ -139,6 +139,12 @@ namespace CumminsEcmEditor.Cummins
                         itn.GetComment(),
                         itn.IsModified
                         );
+                else
+                {
+                    // Temp disable
+                    // AddDimensionalParameters(itn);
+                }
+
             // Add short divider and record count
             AddDivider(A_RowDelineator, 31);
             Document.Add($"Total Records = {itns.Length}");
@@ -146,6 +152,40 @@ namespace CumminsEcmEditor.Cummins
         #endregion
 
         #region Private Document Add Methods
+        private void AddDimensionalParameters(Itn itn)
+        {
+            DataType dT = itn.Parameter.data_type;
+            if (dT is X_Axis x)
+                AddXAxis(x);
+            else if (dT is Y_Axis y)
+                AddYAxis(y);
+            else if (dT is Z_Axis z)
+                AddZAxis(z);
+            else if (dT is Table t)
+                AddTable(t);
+        }
+        private void AddXAxis(X_Axis x)
+        {
+
+        }
+        private void AddYAxis(Y_Axis y)
+        {
+
+        }
+        private void AddZAxis(Z_Axis z)
+        {
+
+        }
+        private void AddTable(Table t)
+        {
+
+        }
+        private DataType GetElementDataType(DataType dT)
+        {
+            if (dT is Floating_Point fP)
+                return fP;
+            return (Fixed_Point)dT;
+        }
         private void AddTitledDivider(string title) =>
             Document.AddRange(new string[]{"",title,D_GroupColumnHeaders,GetDivider(A_RowDelineator),""});
         private void AddSubFile(int number) => Document.Add($"Subfile: {number}");
@@ -184,7 +224,7 @@ namespace CumminsEcmEditor.Cummins
             itn = itn.ToPaddedString(P_PaddingItn);
             comment = comment.ToDocumentSafe();
             // Add the parameter to the document
-            Document.Add($"{mark}{d}{name}{d}{value}{d}{units}{d}{itn}{d}{comment}");
+            Document.Add($"{d}{mark}{name}{d}{value}{d}{units}{d}{itn}{d}{comment}");
         }
         #endregion
 

@@ -40,7 +40,7 @@ namespace CumminsEcmEditor.Cummins
                               Parameter.data_type is Fixed_Point) :
                               ByteCount <= 4;
         public string GetName() =>
-            HasParameter() ? Parameter.name : $"UL_ITN_{GetHexId()}";
+            HasParameter() ? Parameter.name : $"Unk_ITN{GetHexId()}";
         public byte[][] GetRawData()
         {
             if (HasParameter())

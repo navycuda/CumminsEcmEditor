@@ -20,14 +20,14 @@ Subfile: 8
 Name                                             Value        Units      Itn        Comment
 -------------------------------------------------------------------------------------------
 
-~ UL_ITN_0x00000001                                001A002C     HEX        0x00000001 An imaginary itn to help
+ ~UL_ITN_0x00000001                                001A002C     HEX        0x00000001 An imaginary itn to help
   UL_ITN_0x00000002                                5.00         Deg/C      0x00000002 demonstrate the document
-▲ ▲                                              ▲ ▲          ▲ ▲        ▲ ▲        ▲ ▲
-│ ├──────────────────────────────────────────────┤ ├──────────┤ ├────────┤ ├────────┤ ├────────────▶
-│ │ Parameter Name                               │ │UserValue │ │UnitType│ │Itn #   │ │Comment
-│ │ 48 char                                      │ │12 char   │ │10 char │ │10 char │ │Remove special characters
-│ ╰──────────────────────────────────────────────╯ ╰──────────╯ ╰────────╯ ╰────────╯ ╰────────────▶
-╰── Parameter Marked as Modified with '~'
+ ▲▲                                              ▲ ▲          ▲ ▲        ▲ ▲        ▲ ▲
+ │├──────────────────────────────────────────────┤ ├──────────┤ ├────────┤ ├────────┤ ├────────────▶
+ ││ Parameter Name                               │ │UserValue │ │UnitType│ │Itn #   │ │Comment
+ ││ 48 char                                      │ │12 char   │ │10 char │ │10 char │ │Remove special characters
+ │╰──────────────────────────────────────────────╯ ╰──────────╯ ╰────────╯ ╰────────╯ ╰────────────▶
+ ╰─ Parameter Marked as Modified with '~'
 One ' ' between each column.
 
 *****
@@ -97,3 +97,6 @@ Thoughts:
 
     For parsing, now with the itn included the only two data points that need to be extracted are the itn number and the value
     to convert back to hex.
+
+Notes:
+    When sorting by manager, group, etc, always sort tables to the bottom, singles at the top
