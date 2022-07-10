@@ -1,4 +1,5 @@
 ﻿using CumminsEcmEditor.Cummins;
+using CumminsEcmEditor.Tools.Extensions;
 
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace CumminsEcmEditor.WinOLS
             EcmParameter ecmParameter = new()
             {
                 name = map.Name,
-                id = map.IdName,
+                id = map.IdName.HexToInt().ToString(),
                 description = map.FieldvaluesName,
             };
             // Classify this map
@@ -28,33 +29,66 @@ namespace CumminsEcmEditor.WinOLS
             if (ecmPT == EcmParameterType.Floating_Point)
             {
                 ElementDetails eD = new(map.FieldvaluesUnit,"4");
-                ecmParameter.data_type = CreateParameterDataType<Floating_Point>(eD);
+                ecmParameter.data_type = GetFloating_Point(eD);
             }
-            if (ecmPT == EcmParameterType.Fixed_Point)
-
-
-
+            // Fixed_Point Value
+            else if (ecmPT == EcmParameterType.Fixed_Point)
+            {
+                ElementDetails eD = new(
+                    map.FieldvaluesUnit,
+                    GetDataLength(map),
+                    map.bSigned == "1" ? "S" : "U",
+                    map.FieldvaluesFactor
+                    );
+                ecmParameter.data_type = GetFixed_Point(eD);
+            }
+            // Y_Axis
             return ecmParameter;
         }
 
-        #region Private Methods
-        /// <summary>
-        /// Creates a new Single Value EcmParameter
-        /// </summary>
-        /// <typeparam name="T">DataType</typeparam>
-        /// <param name="bytes">byte count of datatype</param>
-        /// <returns>EcmParameter</returns>
-        private static DataType CreateParameterDataType<T>(ElementDetails elementDetails) where T : DataType
+        public static ConfigurationFile ToConfigurationFile(this MapPack mapPack)
         {
-            if (typeof(T) == typeof(Floating_Point))
+            // Prepare an empty configuration file
+            ConfigurationFile ecfg = new();
+            // Prepare an empty list to assemble parameters into
+            List<EcmParameter?> ecmParameters = new List<EcmParameter>();
+            // Iterate through the maps and convert them into EcmParameters
+            foreach (Map map in mapPack.maps)
+                ecmParameters.Add(map.GetEcmParameter());
+            // Add the ecmParameters to the ecfg
+            ecfg.Parameters = ecmParameters.ToArray();
+            
+            return ecfg;
+        }
+
+        #region Private Methods
+        private static DataType GetDataTypeByFlag(ElementDetails elementDetails, EcmParameterType ecmParameterType)
+        {
+            if ((ecmParameterType & EcmParameterType.Floating_Point) != 0)
+                return GetFloating_Point(elementDetails);
+            return GetFixed_Point(elementDetails);
+        }
+        private static Floating_Point GetFloating_Point(ElementDetails elementDetails) =>
+            new()
             {
-
-            }
-            if (typeof(T) == typeof(Fixed_Point))
+                engr_units = elementDetails.engr_units,
+                data_length = elementDetails.data_length,
+            };
+        private static Fixed_Point GetFixed_Point(ElementDetails elementDetails) =>
+            new()
             {
-
-            }
-
+                engr_units = elementDetails.engr_units,
+                data_length = elementDetails.data_length,
+                sign = elementDetails.sign,
+                scalar_multiplier = elementDetails.scalar_multiplier,
+            };
+        private static string GetDataLength(Map map)
+        {
+            if (map.DataOrg == "eLoHiLoHi")
+                return "4";
+            else if (map.DataOrg == "eLoHi")
+                return "2";
+            return "1";
         }
         #endregion
 
@@ -73,13 +107,13 @@ namespace CumminsEcmEditor.WinOLS
             // Single Value Parameter, ie a toggle
             if (map.Type == "eEinzel" && (rows * columns) == 1)
                 return pT;
-            // Y_Axis - single dimension
+            // Y_Axis - single dimension(in winOLS) but has an x-axis
             if (map.Type == "eEindim" && rows == 1 && columns > 1)
                 return pT | EcmParameterType.Y_Axis;
-            // Z_Axis - two dimensions
+            // Z_Axis - two dimensions(in winOLS) has x,y axis
             if (map.Type == "eZweidim" && rows > 1 && columns > 1)
                 return pT | EcmParameterType.Z_Axis;
-            // Table - one dimension
+            // Table - one dimension has no axis data
             bool isTable = map.AxisXIdName == "" && map.AxisYIdName == "";
             if (map.Type == "eZweidim" && rows > 1 && columns == 1 && isTable)
                 return pT | EcmParameterType.Table;
@@ -87,13 +121,13 @@ namespace CumminsEcmEditor.WinOLS
         }
         private static EcmParameterType GetDataOrg(string dataOrg)
         {
-            if (dataOrg == "eLoHiLoHi")
+            if (dataOrg == "eFloatLoHi")
                 return EcmParameterType.Floating_Point;
-            else if (dataOrg == "eLoHiLoHi")
+            else if (dataOrg == "eLoHiLoHi")            // 4 bytes
                 return EcmParameterType.Fixed_Point;
-            else if (dataOrg == "eLoHi")
+            else if (dataOrg == "eLoHi")                // 2 bytes
                 return EcmParameterType.Fixed_Point;
-            else if (dataOrg == "eByte")
+            else if (dataOrg == "eByte")                // 1 byte
                 return EcmParameterType.Fixed_Point;
             return EcmParameterType.None;
         }
@@ -129,4 +163,9 @@ namespace CumminsEcmEditor.WinOLS
             sign = _sign;
             scalar_multiplier = _scalar;
         }
+    }
+    public struct AxisDetails
+    {
+
+    }
 }

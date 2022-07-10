@@ -77,12 +77,9 @@ namespace CumminsEcmEditor.WinOLS
         public int GetId() =>
             IdName.HexToInt();
         
+        public EcmParameter? GetEcmParameter() =>
+            WinOLSConverter.ToEcmParameter(this);
 
-        public DataType GetDataType()
-        {
-
-            return new();
-        }
         public int GetColumns()
         {
             int columns;
@@ -96,30 +93,6 @@ namespace CumminsEcmEditor.WinOLS
             if (int.TryParse(Rows, out rows))
                 return rows;
             return 0;
-        }
-        private float GetScalarMultiplier()
-        {
-            float output;
-            if (float.TryParse(FieldvaluesFactor, out output))
-                return output;
-            return 1.0f;
-        }
-        private X_Axis GetAsXAxis()
-        {
-
-            return new();
-        }
-        private Y_Axis GetAsYAxis()
-        {
-            return new();
-        }
-        private Z_Axis GetAsZAxis()
-        {
-            return new();
-        }
-        private Table GetAsTable()
-        {
-            return new();
         }
     }
 }

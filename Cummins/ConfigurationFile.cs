@@ -431,7 +431,6 @@ namespace CumminsEcmEditor.Cummins
         public string product_id { get; set; }
         public string module_part_number { get; set; }
         public string interface_level { get; set; }
-        [System.Xml.Serialization.XmlElementAttribute(DataType = "date")]
         public string creation_date { get; set; }
         public string start_boot_loader_version { get; set; }
         public string end_boot_loader_version { get; set; }

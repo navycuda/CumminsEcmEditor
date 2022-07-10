@@ -26,7 +26,10 @@ Convert WinOLS map to Cummins Engine Parameter
 
 
 <h4>ToDo:</h4>
-Questions/Thougths:
+
+Xcal checksum calculator
+
+<h4>Questions/Thougths:</h4>
 
 Does the device installing the bin care if the data is stored as little endian or not?  Is the byte
 order relevant to the device or does it just install the bits in the order they're presented in the
