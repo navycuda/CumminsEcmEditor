@@ -76,13 +76,34 @@ namespace CumminsEcmEditor.WinOLS
             Name;
         public int GetId() =>
             IdName.HexToInt();
+        
 
         public DataType GetDataType()
         {
 
             return new();
         }
-
+        public int GetColumns()
+        {
+            int columns;
+            if (int.TryParse(Columns, out columns))
+                return columns;
+            return 0;
+        }
+        public int GetRows()
+        {
+            int rows;
+            if (int.TryParse(Rows, out rows))
+                return rows;
+            return 0;
+        }
+        private float GetScalarMultiplier()
+        {
+            float output;
+            if (float.TryParse(FieldvaluesFactor, out output))
+                return output;
+            return 1.0f;
+        }
         private X_Axis GetAsXAxis()
         {
 

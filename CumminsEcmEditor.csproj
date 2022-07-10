@@ -17,8 +17,4 @@
     <None Remove="EcmEditorFlowishChart.odg" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="WinOLS\" />
-  </ItemGroup>
-
 </Project>
