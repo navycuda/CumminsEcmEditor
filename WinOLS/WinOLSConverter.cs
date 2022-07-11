@@ -25,24 +25,27 @@ namespace CumminsEcmEditor.WinOLS
             // Select creation method from the ecmParameterType
             if (ecmPT == EcmParameterType.None)
                 return null;
+            ElementDetails eD = new(
+                map.FieldvaluesUnit,
+                GetDataLength(map),
+                map.bSigned == "1" ? "S" : "U",
+                map.FieldvaluesFactor
+                );
             // Floating Point Value
             if (ecmPT == EcmParameterType.Floating_Point)
             {
-                ElementDetails eD = new(map.FieldvaluesUnit,"4");
                 ecmParameter.data_type = GetFloating_Point(eD);
             }
             // Fixed_Point Value
-            else if (ecmPT == EcmParameterType.Fixed_Point)
+            if (ecmPT == EcmParameterType.Fixed_Point)
             {
-                ElementDetails eD = new(
-                    map.FieldvaluesUnit,
-                    GetDataLength(map),
-                    map.bSigned == "1" ? "S" : "U",
-                    map.FieldvaluesFactor
-                    );
                 ecmParameter.data_type = GetFixed_Point(eD);
             }
             // Y_Axis
+            else if ((ecmPT & EcmParameterType.Y_Axis) != 0)
+            {
+                ecmParameter.data_type = GetY_Axis(map, ecmPT);
+            }
             return ecmParameter;
         }
 
@@ -82,9 +85,17 @@ namespace CumminsEcmEditor.WinOLS
                 sign = elementDetails.sign,
                 scalar_multiplier = elementDetails.scalar_multiplier,
             };
+        private static Y_Axis GetY_Axis(Map map, EcmParameterType ecmParameterType)
+        {
+
+            // Create the new Y axis
+            Y_Axis result = new();
+
+            return new();
+        } 
         private static string GetDataLength(Map map)
         {
-            if (map.DataOrg == "eLoHiLoHi")
+            if (map.DataOrg == "eLoHiLoHi" || map.DataOrg == "eFloatLoHi")
                 return "4";
             else if (map.DataOrg == "eLoHi")
                 return "2";
@@ -93,57 +104,9 @@ namespace CumminsEcmEditor.WinOLS
         #endregion
 
         #region EcmParameter Type Methods
-        private static EcmParameterType Classify(this Map map)
-        {
-            // Add the correct type flag for this map.
-            EcmParameterType pT = GetDataOrg(map.DataOrg);
-            // Add the correct parameter flag for this map.
-            return map.AddParameterType(pT);
-        }
-        private static EcmParameterType AddParameterType(this Map map, EcmParameterType pT)
-        {
-            int rows = map.GetRows();
-            int columns = map.GetColumns();
-            // Single Value Parameter, ie a toggle
-            if (map.Type == "eEinzel" && (rows * columns) == 1)
-                return pT;
-            // Y_Axis - single dimension(in winOLS) but has an x-axis
-            if (map.Type == "eEindim" && rows == 1 && columns > 1)
-                return pT | EcmParameterType.Y_Axis;
-            // Z_Axis - two dimensions(in winOLS) has x,y axis
-            if (map.Type == "eZweidim" && rows > 1 && columns > 1)
-                return pT | EcmParameterType.Z_Axis;
-            // Table - one dimension has no axis data
-            bool isTable = map.AxisXIdName == "" && map.AxisYIdName == "";
-            if (map.Type == "eZweidim" && rows > 1 && columns == 1 && isTable)
-                return pT | EcmParameterType.Table;
-            return EcmParameterType.None;
-        }
-        private static EcmParameterType GetDataOrg(string dataOrg)
-        {
-            if (dataOrg == "eFloatLoHi")
-                return EcmParameterType.Floating_Point;
-            else if (dataOrg == "eLoHiLoHi")            // 4 bytes
-                return EcmParameterType.Fixed_Point;
-            else if (dataOrg == "eLoHi")                // 2 bytes
-                return EcmParameterType.Fixed_Point;
-            else if (dataOrg == "eByte")                // 1 byte
-                return EcmParameterType.Fixed_Point;
-            return EcmParameterType.None;
-        }
         #endregion
     }
-    [Flags]
-    public enum EcmParameterType
-    {
-        None                = 0,
-        Floating_Point      = 0b1,
-        Fixed_Point         = 0b10,
-        X_Axis              = 0b100,
-        Y_Axis              = 0b1000,
-        Z_Axis              = 0b10000,
-        Table               = 0b100000
-    }
+
     public struct ElementDetails
     {
         public string engr_units { get; set; }
