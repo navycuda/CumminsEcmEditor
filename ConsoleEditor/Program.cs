@@ -9,9 +9,8 @@ Calibration xCal = new(@"Y:\WinOLS\237019FU5C.XCAL");
 
 MapPack mapPack = new(@"Y:\WinOLS\IsvCsvMapPack.json");
 
-ConfigurationFile ecfg = mapPack.ToConfigurationFile();
+xCal.TableOfContents.ConvertMapPackToConfiguration(@"Y:\WinOLS\IsvCsvMapPack.json", @"Y:\WinOLS\bcxV2.ecfg");
 
-ecfg.Save(@"Y:\WinOLS\bcx.ecfg");
 
 // xCal.SaveModdedCalibration(true);
 // xCal.Document.Save();

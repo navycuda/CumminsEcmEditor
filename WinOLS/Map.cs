@@ -77,9 +77,6 @@ namespace CumminsEcmEditor.WinOLS
         public int GetId() =>
             IdName.HexToInt();
         
-        public EcmParameter? GetEcmParameter() =>
-            WinOLSConverter.ToEcmParameter(this);
-
         public int GetColumns()
         {
             int columns;

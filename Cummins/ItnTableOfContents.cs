@@ -138,38 +138,83 @@ namespace CumminsEcmEditor.Cummins
             else if ((ecmPT & EcmParameterType.Y_Axis) != 0)
                 ecmParameter.data_type = GetY_Axis(map, parameters, ecmPT);
             
-
+            // Add the completed parameter
+            parameters.Add(ecmParameter);
             // return the list as an array
             return parameters.ToArray();
         }
         private Y_Axis GetY_Axis(Map map, List<EcmParameter> parameters, EcmParameterType pT)
         {
+            // Setup the Y axis element datatype
             DataType y_element_type;
             if ((pT & EcmParameterType.Floating_Point) != 0)
                 y_element_type = GetFloating_Point(map);
             else
                 y_element_type = GetFixed_Point(map);
+            // Find the related X Axis Id.
+            string relatedXAxisId = GetX_AxisId(map, parameters);
 
+            // Assemble the y axis
             Y_Axis y_Axis = new()
             {
                 y_element_type = y_element_type,
+                element_count = map.Columns,
+                related_x_axis_id = relatedXAxisId,
             };
+            
+            return y_Axis;
+        }
+        private string GetX_AxisId(Map map, List<EcmParameter> parameters)
+        {
+            // Get the name of the x axis
+            string name = map.AxisXIdName;
+            // Search and see if this axis exists already.  
+            if (parameters.Any(p => p.name == name))
+                return parameters.Where(p => p.name == name).First().id;
+            // Setup variables to calculate address offsets
+            int yAddress = map.FieldvaluesStartAddr.HexToInt();
+            int xAddress = map.AxisXDataAddr.HexToInt();
+            int offset = xAddress - yAddress;
+            int xItnId = -1;
+            // Does this Itn have the parameter assigned to it already?
+            if (Contents.Any(c => c.Id == map.IdName.HexToInt()))
+            {
+                Itn itn = Contents.Where(c => c.Id == map.IdName.HexToInt()).First();
+                Itn xItn;
+                xAddress = itn.AbsoluteAddress + offset;
+                if (Contents.Any(c => c.AbsoluteAddress == xAddress))
+                {
+                    xItn = Contents.Where((c) => c.AbsoluteAddress == xAddress).First();
+                    if (xItn.HasParameter())
+                        return xItn.Id.ToString();
+                    xItnId = xItn.Id;
+                }
+            }
+            // Setup the x axis element datatype
+            DataType x_element_type;
+            if (GetDataOrg(map.AxisXDataOrg) == EcmParameterType.Floating_Point)
+                x_element_type = GetFloating_Point(map.AxisXUnit, map.AxisXDataOrg);
+            else
+                x_element_type = GetFixed_Point(map.AxisXUnit, map.AxisXDataOrg, map.AxisXbSigned, map.AxisXFactor);
+            // Setup the X axis
             EcmParameter x_Axis = new()
             {
                 name = map.AxisXIdName,
-                id = GetX_AxisId(map, map.IdName.HexToInt()),
+                id = xItnId.ToString(),
                 description = map.AxisXName,
                 group_ids = "",
                 data_type = new X_Axis()
                 {
-
+                    x_element_type = x_element_type,
+                    element_count = map.Columns
                 }
             };
-        }
-        private string GetX_AxisId(Map map, int yAxisId)
-        {
+            // Add the x- axis to the parameters list
+            if (x_Axis.id != "-1")
+                parameters.Add(x_Axis);
 
-            return "";
+
+            return xItnId.ToString();
         }
         private static Fixed_Point GetFixed_Point(Map map) =>
             new()
@@ -183,8 +228,8 @@ namespace CumminsEcmEditor.Cummins
             new()
             {
                 engr_units = units,
-                data_length = dataLength,
-                sign = _sign,
+                data_length = GetDataLength(dataLength),
+                sign = _sign == "1" ? "S" : "U",
                 scalar_multiplier = scalar
             };
         private static Floating_Point GetFloating_Point(Map map) =>

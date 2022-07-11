@@ -12,6 +12,7 @@ namespace CumminsEcmEditor.Tools.Extensions
     {
         public static int HexToInt(this string hex)
         {
+            hex = hex.Replace("$", "");
             if (hex.Length < 2)
                 return -1;
             if (hex[..2] == "0x")
