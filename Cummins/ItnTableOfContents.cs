@@ -23,6 +23,7 @@ namespace CumminsEcmEditor.Cummins
         private int UnpackedRecords { get; set; }
         private XCalByteOrder ByteOrder { get; set; }
         private string EcfgPath { get; set; }
+        private List<EcmParameter> EcmParameters { get; set; }
         #endregion
 
         #region Constructor
@@ -33,15 +34,6 @@ namespace CumminsEcmEditor.Cummins
             Address = XCal.GetTableOfContentsAddress();
             PackedRecords = XCal.Cursor.Read(Address, 4).ToInt(ByteOrder);
             GetItnParameters(GetPackedItnRecords());
-            Console.SetCursorPosition(0, 20);
-            for (int i = 0; i < 24; i++)
-            {
-                string id = "0x" + Contents[i].Id.IntToHex(4);
-                string address = "0x" + Contents[i].AbsoluteAddress.IntToHex(4);
-                int length = Contents[i].ByteCount;
-
-                Console.WriteLine($"{id} : {address} : {length}");
-            }
         }
         #endregion
 
@@ -104,14 +96,16 @@ namespace CumminsEcmEditor.Cummins
             // Prepare an emtpy Configuration File
             ConfigurationFile ecfg = new();
             // Prepare an empty list of ecm parameters
-            List<EcmParameter> ecmParameters = new();
+            EcmParameters = new();
             // Iternate through the maps and convert them into the EcmParameters
             foreach (Map map in mapPack.maps)
-                ecmParameters.AddRange(GetParametersFrom(map));
+                EcmParameters.AddRange(GetParametersFrom(map));
             // Add the parameters to the ecfg after sorted by Id.
-            ecfg.Parameters = ecmParameters.OrderBy(p => p.GetId()).ToArray();
+            ecfg.Parameters = EcmParameters.OrderBy(p => p.GetId()).ToArray();
             // Save the ecfg
             ecfg.Save(configPath);
+            // Clear the Parameters
+            EcmParameters.Clear();
         }
         #endregion
 
@@ -137,44 +131,98 @@ namespace CumminsEcmEditor.Cummins
                 ecmParameter.data_type = GetFixed_Point(map);
             else if ((ecmPT & EcmParameterType.Y_Axis) != 0)
                 ecmParameter.data_type = GetY_Axis(map, parameters, ecmPT);
+            else if ((ecmPT & EcmParameterType.Z_Axis) != 0)
+                ecmParameter.data_type = GetZ_Axis(map, parameters, ecmPT);
+            else if ((ecmPT & EcmParameterType.Table) != 0)
+                ecmParameter.data_type = GetTable(map, parameters, ecmPT);
             
             // Add the completed parameter
             parameters.Add(ecmParameter);
             // return the list as an array
             return parameters.ToArray();
         }
+        private Table GetTable(Map map, List<EcmParameter> parameters, EcmParameterType pT)
+        {
+            // Setup the element type
+            DataType elementType = SetupElement(map, pT);
+            // Setup the table
+            return new()
+            {
+                element_type = elementType,
+                element_count = map.Rows,
+            };
+        }
+        private DataType SetupElement(Map map, EcmParameterType pT)
+        {
+            DataType elementType;
+            if ((pT & EcmParameterType.Floating_Point) != 0)
+                elementType = GetFloating_Point(map);
+            else
+                elementType = GetFixed_Point(map);
+            return elementType;
+        }
+        private Z_Axis GetZ_Axis(Map map, List<EcmParameter> parameters, EcmParameterType pT)
+        {
+            // Setup the Z element type
+            DataType zElementType = SetupElement(map, pT);
+            // Find the related X Axis Id
+            string relatedXAxisId = GetX_AxisId(map, parameters);
+            // Find the related Y Axis Id
+            string relatedYAxisId = GetY_AxisId(map, parameters);
+            // assemble the Z Axis
+            return new()
+            {
+                z_element_type = zElementType,
+                related_x_axis_id = relatedXAxisId,
+                related_y_axis_id = relatedYAxisId,
+            };
+        }
         private Y_Axis GetY_Axis(Map map, List<EcmParameter> parameters, EcmParameterType pT)
         {
             // Setup the Y axis element datatype
-            DataType y_element_type;
-            if ((pT & EcmParameterType.Floating_Point) != 0)
-                y_element_type = GetFloating_Point(map);
-            else
-                y_element_type = GetFixed_Point(map);
+            DataType yElementType = SetupElement(map, pT);
             // Find the related X Axis Id.
             string relatedXAxisId = GetX_AxisId(map, parameters);
-
             // Assemble the y axis
-            Y_Axis y_Axis = new()
+            return new()
             {
-                y_element_type = y_element_type,
+                y_element_type = yElementType,
                 element_count = map.Columns,
                 related_x_axis_id = relatedXAxisId,
             };
-            
-            return y_Axis;
+        }
+        private string GetY_AxisId(Map map, List<EcmParameter> parameters)
+        {
+            // Get the name of the y axis
+            string name = map.AxisYIdName;
+            // Search and see if this axis exists already.
+            if (EcmParameters.Any(p => p.name == name))
+                return EcmParameters.Where(p => p.name == name).First().id;
+            // Setup variables to calculate address offsets
+            int baseAddress = map.FieldvaluesStartAddr.HexToInt();
+            int yAddress = map.AxisYDataAddr.HexToInt();
+            int offset = yAddress - baseAddress;
+            int yItnId = -1;
+            // Does this Itn have the parameter assigned to it already?
+            if (Contents.Any(c => c.Id == ))
+
+
+
+
+
+            return "";
         }
         private string GetX_AxisId(Map map, List<EcmParameter> parameters)
         {
             // Get the name of the x axis
             string name = map.AxisXIdName;
             // Search and see if this axis exists already.  
-            if (parameters.Any(p => p.name == name))
-                return parameters.Where(p => p.name == name).First().id;
+            if (EcmParameters.Any(p => p.name == name))
+                return EcmParameters.Where(p => p.name == name).First().id;
             // Setup variables to calculate address offsets
-            int yAddress = map.FieldvaluesStartAddr.HexToInt();
+            int baseAddress = map.FieldvaluesStartAddr.HexToInt();
             int xAddress = map.AxisXDataAddr.HexToInt();
-            int offset = xAddress - yAddress;
+            int offset = xAddress - baseAddress;
             int xItnId = -1;
             // Does this Itn have the parameter assigned to it already?
             if (Contents.Any(c => c.Id == map.IdName.HexToInt()))
@@ -210,6 +258,10 @@ namespace CumminsEcmEditor.Cummins
                 }
             };
             // Add the x- axis to the parameters list
+            // For the time being if I can't index the location of 
+            // the itn, I won't add it.  The hope is that perhaps
+            // some of the axes used multiple times, eventually one
+            // will be right.
             if (x_Axis.id != "-1")
                 parameters.Add(x_Axis);
 
