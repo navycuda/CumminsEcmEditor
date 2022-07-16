@@ -204,7 +204,7 @@ namespace CumminsEcmEditor.Cummins
             int offset = yAddress - baseAddress;
             int yItnId = -1;
             // Does this Itn have the parameter assigned to it already?
-            if (Contents.Any(c => c.Id == ))
+            if (Contents.Any(c => c.Id == map.))
 
 
 
