@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -204,10 +205,19 @@ namespace CumminsEcmEditor.Cummins
             int offset = yAddress - baseAddress;
             int yItnId = -1;
             // Does this Itn have the parameter assigned to it already?
-            if (Contents.Any(c => c.Id == map.))
-
-
-
+            if (Contents.Any(c => c.Id == map.IdName.HexToInt()))
+            {
+                Itn itn = Contents.Where(c => c.Id == map.IdName.HexToInt()).First();
+                Itn yItn;
+                yAddress = itn.AbsoluteAddress + offset;
+                if (Contents.Any(c => c.AbsoluteAddress == yAddress))
+                {
+                    yItn = Contents.Where((c) => c.AbsoluteAddress == yAddress).First();
+                    if (yItn.HasParameter())
+                        return yItn.Id.ToString();
+                    yItnId = yItn.Id;
+                }
+            }
 
 
             return "";

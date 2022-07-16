@@ -10,6 +10,10 @@ using System.Xml.Serialization;
 
 namespace CumminsEcmEditor.Cummins
 {
+    /// <summary>
+    /// min_resolution 0 or 1.0 == integer
+    /// decimal count is based on the number of digits past the decimal point.
+    /// </summary>
     [Serializable]
     [XmlRoot(ElementName = "Engineering_Tool_Config_File", Namespace = "http://www.electronics.cummins.com/eti/I")]
     public class ConfigurationFile

@@ -5,7 +5,7 @@ using CumminsEcmEditor.Tools.Extensions;
 using CumminsEcmEditor.WinOLS;
 
 // open the calibration
-Calibration xCal = new(@"Y:\WinOLS\237019FU5C.XCAL");
+Calibration xCal = new(@"Y:\WinOLS\WinOLS.xcal");
 
 MapPack mapPack = new(@"Y:\WinOLS\IsvCsvMapPack.json");
 
