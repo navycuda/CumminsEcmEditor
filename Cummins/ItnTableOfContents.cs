@@ -92,21 +92,25 @@ namespace CumminsEcmEditor.Cummins
         #region WinOLS Conversion Public Methods
         public void ConvertMapPackToConfiguration(string mapPath, string configPath)
         {
-            // Load the map pack
-            MapPack mapPack = new(mapPath);
-            // Prepare an emtpy Configuration File
-            ConfigurationFile ecfg = new();
-            // Prepare an empty list of ecm parameters
-            EcmParameters = new();
-            // Iternate through the maps and convert them into the EcmParameters
-            foreach (Map map in mapPack.maps)
-                EcmParameters.AddRange(GetParametersFrom(map));
-            // Add the parameters to the ecfg after sorted by Id.
-            ecfg.Parameters = EcmParameters.OrderBy(p => p.GetId()).ToArray();
-            // Save the ecfg
-            ecfg.Save(configPath);
-            // Clear the Parameters
-            EcmParameters.Clear();
+          // Curiousity sake, number of itns
+          Console.WriteLine($"{Contents.Length} itns to process");
+          // Load the map pack
+          MapPack mapPack = new(mapPath);
+          // Prepare an emtpy Configuration File
+          ConfigurationFile ecfg = new();
+          // Prepare an empty list of ecm parameters
+          EcmParameters = new();
+          // Iternate through the maps and convert them into the EcmParameters
+          foreach (Map map in mapPack.maps)
+              EcmParameters.AddRange(GetParametersFrom(map));
+          // Add the parameters to the ecfg after sorted by Id.
+          ecfg.Parameters = EcmParameters.OrderBy(p => p.GetId()).ToArray();
+          // How many Parameters Found?
+          Console.WriteLine($"{ecfg.Parameters.Length} parameters mapped...");
+          // Save the ecfg
+          ecfg.Save(configPath);
+          // Clear the Parameters
+          EcmParameters.Clear();
         }
         #endregion
 
@@ -218,8 +222,27 @@ namespace CumminsEcmEditor.Cummins
                     yItnId = yItn.Id;
                 }
             }
-
-
+            // setup the y axis element datatype
+            DataType y_element_type;
+            if (GetDataOrg(map.AxisYDataOrg) == EcmParameterType.Floating_Point)
+                y_element_type = GetFloating_Point(map.AxisYUnit, map.AxisYDataOrg);
+            else
+                y_element_type = GetFixed_Point(map.AxisYUnit, map.AxisYDataOrg, map.AxisYbSigned, map.AxisYFactor);
+            // Setup the Y axis
+            EcmParameter y_Axis = new()
+            {
+              name = map.AxisYIdName,
+              id = yItnId.ToString(),
+              description = map.AxisYName,
+              group_ids = "",
+              data_type = new Y_Axis()
+              {
+                y_element_type = y_element_type,
+                element_count = map.Rows,
+              }
+            };
+            if (y_Axis.id != "-1")
+                parameters.Add(y_Axis);
             return "";
         }
         private string GetX_AxisId(Map map, List<EcmParameter> parameters)
