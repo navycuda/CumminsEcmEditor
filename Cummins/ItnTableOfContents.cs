@@ -205,7 +205,7 @@ namespace CumminsEcmEditor.Cummins
                 return EcmParameters.Where(p => p.name == name).First().id;
             // Setup variables to calculate address offsets
             int baseAddress = map.FieldvaluesStartAddr.HexToInt();
-            int yAddress = map.AxisYDataAddr.HexToInt();
+            int yAddress = (int)(map.AxisYDataAddr.HexToInt() + 0x80020000);
             int offset = yAddress - baseAddress;
             int yItnId = -1;
             // Does this Itn have the parameter assigned to it already?
@@ -213,10 +213,17 @@ namespace CumminsEcmEditor.Cummins
             {
                 Itn itn = Contents.Where(c => c.Id == map.IdName.HexToInt()).First();
                 Itn yItn;
-                yAddress = itn.AbsoluteAddress + offset;
+                //yAddress = itn.AbsoluteAddress + offset;
                 if (Contents.Any(c => c.AbsoluteAddress == yAddress))
                 {
                     yItn = Contents.Where((c) => c.AbsoluteAddress == yAddress).First();
+                    if (yItn.HasParameter())
+                        return yItn.Id.ToString();
+                    yItnId = yItn.Id;
+                }
+                else if (Contents.Any(c => c.AbsoluteAddress == yAddress - 2 && c.ByteCount > 2))
+                {
+                    yItn = Contents.Where(c => c.AbsoluteAddress == yAddress - 2).First();
                     if (yItn.HasParameter())
                         return yItn.Id.ToString();
                     yItnId = yItn.Id;
@@ -243,7 +250,7 @@ namespace CumminsEcmEditor.Cummins
             };
             if (y_Axis.id != "-1")
                 parameters.Add(y_Axis);
-            return "";
+            return yItnId.ToString();
         }
         private string GetX_AxisId(Map map, List<EcmParameter> parameters)
         {
@@ -254,7 +261,7 @@ namespace CumminsEcmEditor.Cummins
                 return EcmParameters.Where(p => p.name == name).First().id;
             // Setup variables to calculate address offsets
             int baseAddress = map.FieldvaluesStartAddr.HexToInt();
-            int xAddress = map.AxisXDataAddr.HexToInt();
+            int xAddress = (int)(map.AxisXDataAddr.HexToInt() + 0x80020000);
             int offset = xAddress - baseAddress;
             int xItnId = -1;
             // Does this Itn have the parameter assigned to it already?
@@ -262,10 +269,17 @@ namespace CumminsEcmEditor.Cummins
             {
                 Itn itn = Contents.Where(c => c.Id == map.IdName.HexToInt()).First();
                 Itn xItn;
-                xAddress = itn.AbsoluteAddress + offset;
+                //xAddress = itn.AbsoluteAddress + offset;
                 if (Contents.Any(c => c.AbsoluteAddress == xAddress))
                 {
                     xItn = Contents.Where((c) => c.AbsoluteAddress == xAddress).First();
+                    if (xItn.HasParameter())
+                        return xItn.Id.ToString();
+                    xItnId = xItn.Id;
+                }
+                else if (Contents.Any(c => c.AbsoluteAddress == xAddress - 2 && c.ByteCount > 2))
+                {
+                    xItn = Contents.Where((c) => c.AbsoluteAddress == xAddress - 2).First();
                     if (xItn.HasParameter())
                         return xItn.Id.ToString();
                     xItnId = xItn.Id;
