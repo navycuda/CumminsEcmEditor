@@ -34,12 +34,14 @@ else if (args.Length == 1 && args[0] == "help")
     Console.WriteLine(s);
   Environment.Exit(0);
 }
+// Standard method of opening, configuration plus the correct ecfg.
 else if (args.Length == 2) 
 {
   Console.WriteLine($"Calibration Path  : {args[0]}");
   checkExists(args[0]);
   Console.WriteLine($"Configuration Path: {args[1]}");
   checkExists(args[1]);
+  load(args[0], args[1]);
 }
 else if (args.Length == 3)
 {
@@ -49,7 +51,10 @@ else if (args.Length == 3)
   checkExists(args[1]);
   Console.WriteLine($"Config Out Path   : {args[2]}");
   if (File.Exists(args[2]))
-    Console.WriteLine($"\tconfig out exists... overwriting");
+    Console.WriteLine($"\toverwriting...");
+  else
+    Console.WriteLine($"\tcreating...");
+  load(args[0],args[1],args[2]);
 }
 else
 {
@@ -60,7 +65,7 @@ else
 
 
 // open the calibration
-//Calibration xCal = new(@"Y:\WinOLS\WinOLS.xcal");
+Calibration xCal = new(args[0]);
 
 //MapPack mapPack = new(@"Y:\WinOLS\IsvCsvMapPack.json");
 
@@ -69,6 +74,24 @@ else
 // xCal.SaveModdedCalibration(true);
 // xCal.Document.Save();
 
+void load(string xCalPath, string ecfgPath){
+  // Load the calibration
+  Calibration xCal = new(xCalPath);
+  // Load the configuration
+  ConfigurationFile ecfg = ConfigurationFile.Load(ecfgPath);
+  // If only we had something to do... you know, like an editor?
+  // Oh OH!  for now can document the engine, that's, you know, important
+  xCal.Document.Save();
+}
+void load(string xCalPath, string mapPackPath, string configSavePath){
+  // Load the xCal that goes with the mapPack.  needed to have correct
+  // itn to match itns to parameters.
+  Calibration xCal = new(xCalPath);
+  // Load and convert the map pack to ecfg
+  xCal.TableOfContents.ConvertMapPackToConfiguration(mapPackPath, configSavePath);
+  // Commentary of some kind?  Other tasks after creation needed?
+  Console.WriteLine($"Configuration saved at {configSavePath}");
+}
 void checkExists(string filePath)
 {
   if (File.Exists(filePath))
