@@ -75,16 +75,23 @@ namespace CumminsEcmEditor.Cummins
         #endregion
 
         #region Document Methods
-        public void Save()
+        public string Save()
         {
             // Generate the Document
             GenerateDocument();
             // Save the Document
             // set the documentPath, alongside the .xcal
-            string docPath = XCal.GetXCalPath().Replace(".XCAL","_Doc.txt");
+            string docPath = XCal.GetXCalPath();
+            if (docPath.Contains(".XCAL"))
+              docPath = docPath.Replace(".XCAL", "_documented.txt");
+            else if (docPath.Contains(".xcal"))
+              docPath = docPath.Replace(".xcal", "_documented.txt");
+            else
+              docPath += ".documented.txt";
             EcmFiles.Save(docPath, Document.ToArray(), true);
             // Clear the document to save memory
             Document.Clear();
+            return docPath;
         } 
         #endregion
 
@@ -193,6 +200,13 @@ namespace CumminsEcmEditor.Cummins
         {
             Document.Add("Parameter Report");
             Document.Add("");
+            Document.Add($"");
+            Document.Add($"");
+            Document.Add($"");
+            Document.Add($"");
+            Document.Add($"");
+            Document.Add($"");
+            Document.Add($"");
         }
         private void AddReportDetails()
         {
