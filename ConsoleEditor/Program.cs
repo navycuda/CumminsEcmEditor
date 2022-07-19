@@ -37,12 +37,16 @@ else if (args.Length == 1 && args[0] == "help")
 else if (args.Length == 2) 
 {
   Console.WriteLine($"Calibration Path  : {args[0]}");
+  checkExists(args[0]);
   Console.WriteLine($"Configuration Path: {args[1]}");
+  checkExists(args[1]);
 }
 else if (args.Length == 3)
 {
   Console.WriteLine($"Calibration Path  : {args[0]}");
+  checkExists(args[0]);
   Console.WriteLine($"MapPack Path      : {args[1]}");
+  checkExists(args[1]);
   Console.WriteLine($"Config Out Path   : {args[2]}");
   if (File.Exists(args[2]))
     Console.WriteLine($"\tconfig out exists... overwriting");
@@ -64,3 +68,12 @@ else
 
 // xCal.SaveModdedCalibration(true);
 // xCal.Document.Save();
+
+void checkExists(string filePath)
+{
+  if (File.Exists(filePath))
+    return;
+  Console.WriteLine($"\tNot Found : {filePath}");
+  Console.WriteLine($"\texiting...");
+  Environment.Exit(0);
+}
