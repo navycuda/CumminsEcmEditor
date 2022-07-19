@@ -45,6 +45,8 @@ namespace CumminsEcmEditor.Cummins
             // Load the configuration
             Configuration = ConfigurationFile.Load(EcfgPath);
             EcmParameter[] parameters = Configuration.GetParameters();
+            Console.WriteLine($"\tparameters.Length = {parameters.Length}");
+            Console.WriteLine($"\tContents.Length   = {Contents.Length}");
             // prepare a counter for the configuration list
             int config = 0;
 
@@ -69,7 +71,7 @@ namespace CumminsEcmEditor.Cummins
                     p++;
                 else if (itn < par)
                     i++;
-                if (itn == Contents.Length || par == parameters.Length)
+                if (i == Contents.Length || p == parameters.Length)
                     isPairing = false;
             }
 
