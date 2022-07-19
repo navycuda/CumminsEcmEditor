@@ -54,7 +54,7 @@ else if (args.Length == 3)
     Console.WriteLine($"\toverwriting...");
   else
     Console.WriteLine($"\tcreating...");
-  load(args[0],args[1],args[2]);
+  convert(args[0],args[1],args[2]);
 }
 else
 {
@@ -65,13 +65,12 @@ else
 
 
 // open the calibration
-Calibration xCal = new(args[0]);
+//Calibration xCal = new(args[0]);
 
 //MapPack mapPack = new(@"Y:\WinOLS\IsvCsvMapPack.json");
 
 //xCal.TableOfContents.ConvertMapPackToConfiguration(@"Y:\WinOLS\IsvCsvMapPack.json", @"Y:\WinOLS\bcxV2.ecfg");
 
-// xCal.SaveModdedCalibration(true);
 // xCal.Document.Save();
 
 void load(string xCalPath, string ecfgPath){
@@ -80,10 +79,11 @@ void load(string xCalPath, string ecfgPath){
   // Load the configuration
   ConfigurationFile ecfg = ConfigurationFile.Load(ecfgPath);
   // If only we had something to do... you know, like an editor?
+  // xCal.SaveModdedCalibration(true);
   // Oh OH!  for now can document the engine, that's, you know, important
   xCal.Document.Save();
 }
-void load(string xCalPath, string mapPackPath, string configSavePath){
+void convert(string xCalPath, string mapPackPath, string configSavePath){
   // Load the xCal that goes with the mapPack.  needed to have correct
   // itn to match itns to parameters.
   Calibration xCal = new(xCalPath);
