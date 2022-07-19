@@ -76,12 +76,12 @@ else
 void load(string xCalPath, string ecfgPath){
   // Load the calibration
   Calibration xCal = new(xCalPath);
-  // Load the configuration
-  ConfigurationFile ecfg = ConfigurationFile.Load(ecfgPath);
+  // Apply the configuration
+  xCal.TableOfContents.ApplyConfiguration(ecfgPath);
   // If only we had something to do... you know, like an editor?
   // xCal.SaveModdedCalibration(true);
   // Oh OH!  for now can document the engine, that's, you know, important
-  xCal.Document.Save();
+  Console.WriteLine($"\tEngine document saved at {xCal.Document.Save()}");
 }
 void convert(string xCalPath, string mapPackPath, string configSavePath){
   // Load the xCal that goes with the mapPack.  needed to have correct
