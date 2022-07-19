@@ -131,7 +131,7 @@ namespace CumminsEcmEditor.Cummins
             return 0;
         }
         private string GetUnlistedComment() =>
-            $"{GetByteCount().PadLeft(4)} Unlisted Engine Parameter";
+            $"{GetByteCount().PadLeft(4)} Unlisted Parameter @ {this.GetHexAddress()}";
         private string GetUnitsFromDataType()
         {
             DataType dT = Parameter.data_type;
