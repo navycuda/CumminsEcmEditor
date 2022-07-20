@@ -143,7 +143,7 @@ namespace CumminsEcmEditor.Cummins
                         itn.GetSingleValue(),
                         itn.GetUnits(),
                         itn.GetHexId(),
-                        itn.GetComment(),
+                        itn.GetComment() + $" {itn.GetEcmParameterType()}",
                         itn.IsModified
                         );
                 else
