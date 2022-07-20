@@ -86,11 +86,18 @@ namespace CumminsEcmEditor.Tools.Extensions
           if (xP.engr_units == "HEX")
             return b.ToHex(byteOrder);
           else if (xP.sign == "S")
-            return (b.ToInt(byteOrder) * xP.GetScalarMultiplier()).ToString();
+            if (xP.GetScalarMultiplier() == 1)
+              return b.ToInt(byteOrder).ToString();
+            else
+              return (b.ToInt(byteOrder) * xP.GetScalarMultiplier()).ToString("0.000");
           else if (xP.sign == "U")
-            return (b.ToUInt(byteOrder) * xP.GetScalarMultiplier()).ToString();
+            if (xP.GetScalarMultiplier() == 1)
+              return b.ToUInt(byteOrder).ToString();
+            else
+              return (b.ToUInt(byteOrder) * xP.GetScalarMultiplier()).ToString("0.000");
           return "err_noCap";
         }
+
         public static string ToPaddedString(this string input, int length)
         {
             string output = "";

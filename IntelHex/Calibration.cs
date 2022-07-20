@@ -77,8 +77,7 @@ namespace CumminsEcmEditor.IntelHex
         public void SaveModdedCalibration(bool overwrite = false)
         {
             string[][] calibration = new string[2][];
-            string filePath = FilePath.Replace(".XCAL", "");
-            filePath += "_mod.XCAL";
+            string filePath = ModifyFilePath(new string[]{".XCAL",".xcal"}, "_mod.XCAL");
             List<string> header = new();
             if (CheckSum != null)
                 header.Add(CheckSum);
@@ -88,6 +87,26 @@ namespace CumminsEcmEditor.IntelHex
             calibration[1] = GetIntelHexRecords();
 
             EcmFiles.Save(filePath, calibration, overwrite);
+        }
+        private string ModifyFilePath(string[] remove, string replacement)
+        {
+          foreach (string extension in remove)
+            if (FilePath.Contains(extension))
+              return FilePath.Replace(extension, replacement);          
+          return FilePath + "." + replacement;
+
+        }
+        public void SaveExtendedAddressList()
+        {
+          string filePath = ModifyFilePath(new string[]{ ".XCAL", ".xcal"}, "_elaList.txt");
+          Record[] records = Records.Where(r => r.GetRecordType() == RecordType.ExtendedLinearAddress).ToArray();
+          string[] addresses = new string[records.Length];
+
+          for (int r = 0; r < records.Length; r++)
+            addresses[r] = records[r].GetAbsoluteStartAddress().IntToHex(4);
+
+          EcmFiles.Save(filePath, addresses, true);
+
         }
         public XCalByteOrder GetByteOrder()
         {

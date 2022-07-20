@@ -27,10 +27,37 @@ namespace CumminsEcmEditor.Cummins
         #endregion
 
         #region Get Methods
+        public EcmParameterType GetEcmParameterType()
+        {
+          DataType dT = Parameter.data_type;
+          if (!HasParameter())
+            return EcmParameterType.None;
+          EcmParameterType result = GetElementType(dT, EcmParameterType.None);
+          if (result != EcmParameterType.None)
+            return result;
+          if (dT is Z_Axis z)
+            return GetElementType(z.z_element_type, EcmParameterType.Z_Axis);
+          else if (dT is Y_Axis y)
+            return GetElementType(y.y_element_type, EcmParameterType.Y_Axis);
+          else if (dT is X_Axis x)
+            return GetElementType(x.x_element_type, EcmParameterType.X_Axis);
+          else if (dT is Table t)
+            return GetElementType(t.element_type, EcmParameterType.Table);
+          return result;
+        }
+        private EcmParameterType GetElementType(DataType dT, EcmParameterType pT)
+        {
+          EcmParameterType result = EcmParameterType.None;
+          if (dT is Floating_Point)
+            result = EcmParameterType.Floating_Point;
+          else if (dT is Fixed_Point)
+            result = EcmParameterType.Fixed_Point;
+          return result | pT;
+        }
         public string GetHexId() =>
             $"0x{Id.IntToHex(4)}";
         public string GetHexAddress() =>
-            $"0x{Id.IntToHex(AbsoluteAddress)}";
+            $"0x{AbsoluteAddress.IntToHex(4)}";
         public string GetByteCount() =>
             $"{ByteCount}B";
         public bool HasParameter() =>
@@ -58,11 +85,12 @@ namespace CumminsEcmEditor.Cummins
         }
         public string GetSingleValue() {
           byte[] singleValue = ToC.GetData(AbsoluteAddress, ByteCount);
-          Console.WriteLine(singleValue);
+          if (!HasParameter())
+            return singleValue.ByteToHex();
           if (Parameter.data_type is Floating_Point fP)
             return singleValue.ToFloat(ToC.ByteOrder).ToString("0.000");
           else if (Parameter.data_type is Fixed_Point xP)
-            return singleValue.ToFixedPoint(ToC.ByteOrder, xP).ToString();
+            return singleValue.ToFixedPoint(ToC.ByteOrder, xP);
           return "err_noGsv";
         }
         public string GetUnits()
