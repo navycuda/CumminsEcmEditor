@@ -140,7 +140,7 @@ namespace CumminsEcmEditor.Cummins
                 if (itn.IsSingleValue())
                     AddParameterString(
                         itn.GetName(),
-                        "...",
+                        itn.GetSingleValue(),
                         itn.GetUnits(),
                         itn.GetHexId(),
                         itn.GetComment(),

@@ -56,6 +56,15 @@ namespace CumminsEcmEditor.Cummins
             }
             return new byte[][] { ToC.GetData(AbsoluteAddress, ByteCount) }; 
         }
+        public string GetSingleValue() {
+          byte[] singleValue = ToC.GetData(AbsoluteAddress, ByteCount);
+          Console.WriteLine(singleValue);
+          if (Parameter.data_type is Floating_Point fP)
+            return singleValue.ToFloat(ToC.ByteOrder).ToString("0.000");
+          else if (Parameter.data_type is Fixed_Point xP)
+            return singleValue.ToFixedPoint(ToC.ByteOrder, xP).ToString();
+          return "err_noGsv";
+        }
         public string GetUnits()
         {
             string output = "...";

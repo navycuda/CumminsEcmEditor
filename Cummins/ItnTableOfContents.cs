@@ -22,9 +22,12 @@ namespace CumminsEcmEditor.Cummins
         private int Address { get; set; }
         private int PackedRecords { get; set; }
         private int UnpackedRecords { get; set; }
-        private XCalByteOrder ByteOrder { get; set; }
         private string EcfgPath { get; set; }
         private List<EcmParameter> EcmParameters { get; set; }
+        #endregion
+
+        #region Properties
+        public XCalByteOrder ByteOrder { get; set; }
         #endregion
 
         #region Constructor

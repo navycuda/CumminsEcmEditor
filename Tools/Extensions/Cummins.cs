@@ -34,9 +34,35 @@ namespace CumminsEcmEditor.Tools.Extensions
         {
             if (b.Length > 4)
                 return 0;
+            b = b.FillArray(byteOrder);
             if (byteOrder == XCalByteOrder.LittleEndian)
+            {
+              if (b.Length == 1)
                 return BitConverter.ToUInt32(b.Reverse().ToArray());
+            }
             return BitConverter.ToUInt32(b);
+        }
+        private static byte[] FillArray(this byte[] b, XCalByteOrder byteOrder)
+        {
+          byte[] result = new byte[4];
+          if (byteOrder == XCalByteOrder.LittleEndian)
+          {
+            
+            int bPos = 0;
+            for (int r = 0; r < 4; r++)
+            {
+              if (bPos < b.Length)
+              {
+                result[r] = b[bPos];
+                bPos ++;
+              }
+              else
+              {
+                result[r] = 0x00;
+              }
+            }
+          }
+          return result;
         }
         public static float ToFloat(this byte[] b, XCalByteOrder byteOrder)
         {
@@ -53,6 +79,17 @@ namespace CumminsEcmEditor.Tools.Extensions
             if (byteOrder == XCalByteOrder.LittleEndian)
                 return b.Reverse().ToArray().ByteToHex();
             return b.ByteToHex();
+        }
+        public static string ToFixedPoint(this byte[] b, XCalByteOrder byteOrder, Fixed_Point xP){
+          if (b.Length != xP.GetDataLength())
+            return "err_b.len";
+          if (xP.engr_units == "HEX")
+            return b.ToHex(byteOrder);
+          else if (xP.sign == "S")
+            return (b.ToInt(byteOrder) * xP.GetScalarMultiplier()).ToString();
+          else if (xP.sign == "U")
+            return (b.ToUInt(byteOrder) * xP.GetScalarMultiplier()).ToString();
+          return "err_noCap";
         }
         public static string ToPaddedString(this string input, int length)
         {
