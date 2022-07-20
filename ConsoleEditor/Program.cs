@@ -13,6 +13,7 @@ if(args.Length == 0)
   Console.WriteLine("exiting...");
   Environment.Exit(0);
 }
+// Run the help output.
 else if (args.Length == 1 && args[0] == "help")
 {
   string[] helpResponse = new string[]
@@ -34,7 +35,13 @@ else if (args.Length == 1 && args[0] == "help")
     Console.WriteLine(s);
   Environment.Exit(0);
 }
-// Standard method of opening, configuration plus the correct ecfg.
+// Extract all the addresses from intel hex
+else if (args.Length == 1)
+{
+  checkExists(args[0]);
+  getExtendedAddressList(args[0]);
+}
+// Standard method of opening, calibration plus the correct configuration.
 else if (args.Length == 2) 
 {
   Console.WriteLine($"Calibration Path  : {args[0]}");
@@ -43,6 +50,7 @@ else if (args.Length == 2)
   checkExists(args[1]);
   load(args[0], args[1]);
 }
+// Use case for converting a modified mappack to a configuration
 else if (args.Length == 3)
 {
   Console.WriteLine($"Calibration Path  : {args[0]}");
@@ -56,6 +64,7 @@ else if (args.Length == 3)
     Console.WriteLine($"\tcreating...");
   convert(args[0],args[1],args[2]);
 }
+// Something went wrong
 else
 {
   Console.WriteLine("Unable to Parse Arguments. help for help.");
@@ -91,6 +100,12 @@ void convert(string xCalPath, string mapPackPath, string configSavePath){
   xCal.TableOfContents.ConvertMapPackToConfiguration(mapPackPath, configSavePath);
   // Commentary of some kind?  Other tasks after creation needed?
   Console.WriteLine($"Configuration saved at {configSavePath}");
+}
+void getExtendedAddressList(string xCalPath) {
+  // Load the Calibration
+  Calibration xCal = new(xCalPath);
+  // Save the extended Addresses to a list.
+  xCal.SaveExtendedAddressList();
 }
 void checkExists(string filePath)
 {
