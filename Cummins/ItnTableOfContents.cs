@@ -24,6 +24,8 @@ namespace CumminsEcmEditor.Cummins
         private int UnpackedRecords { get; set; }
         private string EcfgPath { get; set; }
         private List<EcmParameter> EcmParameters { get; set; }
+        private int _NegativeCounter = -1;
+        private int NegativeCounter => _NegativeCounter--;
         #endregion
 
         #region Properties
@@ -76,6 +78,28 @@ namespace CumminsEcmEditor.Cummins
                     i++;
                 if (i == Contents.Length || p == parameters.Length)
                     isPairing = false;
+
+
+                // Temp for debugging
+                if (itn == 3)
+                {
+                  Console.WriteLine($"Calibration_Date_Stamp address = {Contents[i].GetHexAddress()}");
+                  byte[] dateStamp = GetData(Contents[i].AbsoluteAddress, 6);
+                  foreach (byte b in dateStamp){
+                    Console.WriteLine(b.ToString("X2"));
+                  }
+                }
+                if (itn == 1)
+                {
+                  Console.WriteLine($"Block Data Structure address = {Contents[i].GetHexAddress()}");
+                  byte[] blockStructure = GetData(Contents[i].AbsoluteAddress, 60);
+                  Console.WriteLine();
+                  foreach (byte b in blockStructure)
+                  {
+                    Console.Write($"{b.ToString("X2")} ");
+                  }
+                  Console.WriteLine();
+                }
             }
 
         }
@@ -212,7 +236,7 @@ namespace CumminsEcmEditor.Cummins
             int baseAddress = map.FieldvaluesStartAddr.HexToInt();
             int yAddress = (int)(map.AxisYDataAddr.HexToInt() + 0x80020000);
             int offset = yAddress - baseAddress;
-            int yItnId = -1;
+            int yItnId = NegativeCounter;
             // Does this Itn have the parameter assigned to it already?
             if (Contents.Any(c => c.Id == map.IdName.HexToInt()))
             {
@@ -253,8 +277,7 @@ namespace CumminsEcmEditor.Cummins
                 element_count = map.Rows,
               }
             };
-            if (y_Axis.id != "-1")
-                parameters.Add(y_Axis);
+            parameters.Add(y_Axis);
             return yItnId.ToString();
         }
         private string GetX_AxisId(Map map, List<EcmParameter> parameters)
@@ -268,7 +291,7 @@ namespace CumminsEcmEditor.Cummins
             int baseAddress = map.FieldvaluesStartAddr.HexToInt();
             int xAddress = (int)(map.AxisXDataAddr.HexToInt() + 0x80020000);
             int offset = xAddress - baseAddress;
-            int xItnId = -1;
+            int xItnId = NegativeCounter;
             // Does this Itn have the parameter assigned to it already?
             if (Contents.Any(c => c.Id == map.IdName.HexToInt()))
             {
@@ -314,10 +337,7 @@ namespace CumminsEcmEditor.Cummins
             // the itn, I won't add it.  The hope is that perhaps
             // some of the axes used multiple times, eventually one
             // will be right.
-            if (x_Axis.id != "-1")
-                parameters.Add(x_Axis);
-
-
+            parameters.Add(x_Axis);
             return xItnId.ToString();
         }
         private static Fixed_Point GetFixed_Point(Map map) =>
