@@ -79,15 +79,9 @@ namespace CumminsEcmEditor.Cummins
         {
             // Generate the Document
             GenerateDocument();
-            // Save the Document
             // set the documentPath, alongside the .xcal
-            string docPath = XCal.GetXCalPath();
-            if (docPath.Contains(".XCAL"))
-              docPath = docPath.Replace(".XCAL", "_documented.txt");
-            else if (docPath.Contains(".xcal"))
-              docPath = docPath.Replace(".xcal", "_documented.txt");
-            else
-              docPath += ".documented.txt";
+            string docPath = GetSavePath(".xcal", "_documented.txt");
+            // Save the Document
             EcmFiles.Save(docPath, Document.ToArray(), true);
             // Clear the document to save memory
             Document.Clear();
@@ -95,7 +89,90 @@ namespace CumminsEcmEditor.Cummins
         } 
         #endregion
 
+        #region Debug Methods
+        public string SaveDebug() 
+        {
+          // Generate the Debug Report
+          GenerateDebugReport();
+          // Save
+          string filePath = GetSavePath(".xcal", "_debugReport.txt");
+          EcmFiles.Save(filePath, Document.ToArray(), true);
+          // Clear the document.
+          Document.Clear();
+          return filePath;
+        }
+        #endregion
+
+        #region Private Debug Methods
+        private void GenerateDebugReport()
+        {
+          // Prepare new list with a header
+          Document = new()
+          {
+            $"Debug Report Run at : {DateTime.Now}",
+            $"XCalPath = {XCal.GetXCalPath()}",
+            $"EcfgPath = {XCal.TableOfContents.GetEcfgPath()}",
+            "********************************",
+            ""
+          };
+          // Get the Itns
+          Itn[] itns = XCal.TableOfContents.GetAllItns(SortItnsBy.None);
+
+          foreach (Itn itn in itns)
+            if (itn.HasParameter())
+              DebugParameter(itn);
+            else
+              DebugUnlisted(itn);
+        }
+        private void DebugParameter(Itn itn) 
+        {
+          AddDebugString
+          (
+            itn.Id,
+            itn.AbsoluteAddress,
+            itn.ByteCount,
+            itn.GetEcmParameterType(),
+            itn.Parameter.name
+          );
+        }
+        private void DebugUnlisted(Itn itn)
+        {
+          AddDebugString
+          (
+            itn.Id,
+            itn.AbsoluteAddress,
+            itn.ByteCount,
+            itn.GetEcmParameterType(),
+            "Unlisted Itn"
+          );
+        }
+        private void AddDebugString(int id, int address, int bytes, EcmParameterType pT, string name) {
+          string hexId = id.IntToHex(4);
+          string hexAddress = address.IntToHex(4).ToPaddedString(12);
+          string byteCount = $"{bytes}B".ToPaddedString(8);
+          // string rowCount = $"{rows.ToString().PadLeft(6)} rows".ToPaddedString(12);
+          // string colCount = $"{cols.ToString().PadLeft(6)} cols".ToPaddedString(12);
+          // string elementSize = $"{eSize}B".ToPaddedString(6);
+          string dataType = $"{pT}".ToPaddedString(20);
+
+          Document.Add($"{hexId} @ {hexAddress}{byteCount}{dataType}{name}");
+        }
+        #endregion
+
         #region Private Document Methods
+        private string GetSavePath(string contains, string replace)
+        {
+          string filePath = XCal.GetXCalPath();
+          if (filePath.Contains(contains))
+            filePath = filePath.Replace(contains, replace);
+          else if (filePath.Contains(contains.ToLower()))
+            filePath = filePath.Replace(contains.ToLower(), replace);
+          else if (filePath.Contains(contains.ToUpper()))
+            filePath = filePath.Replace(contains.ToUpper(), replace);
+          else
+            filePath += $".{replace}";
+          return filePath;
+        }
         private void GenerateDocument()
         {
             // Generates the Header, (re)sets List<string> Document

@@ -90,7 +90,8 @@ void load(string xCalPath, string ecfgPath){
   // If only we had something to do... you know, like an editor?
   // xCal.SaveModdedCalibration(true);
   // Oh OH!  for now can document the engine, that's, you know, important
-  Console.WriteLine($"\tEngine document saved at {xCal.Document.Save()}");
+  Console.WriteLine($"\tEngine document saved at     {xCal.Document.Save()}");
+  Console.WriteLine($"\tEngine debug report saved at {xCal.Document.SaveDebug()}");
 }
 void convert(string xCalPath, string mapPackPath, string configSavePath){
   // Load the xCal that goes with the mapPack.  needed to have correct
