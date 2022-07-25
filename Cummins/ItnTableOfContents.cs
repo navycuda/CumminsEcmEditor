@@ -26,6 +26,7 @@ namespace CumminsEcmEditor.Cummins
         private List<EcmParameter> EcmParameters { get; set; }
         private int _NegativeCounter = -1;
         private int NegativeCounter => _NegativeCounter--;
+        private BlockDataStructure DataStructure {get; set;}
         #endregion
 
         #region Properties
@@ -44,6 +45,17 @@ namespace CumminsEcmEditor.Cummins
         #endregion
 
         #region Public Methods
+        public string[] GetBlockDataStructure() 
+        {
+          BlockDataStructure bDS = new(XCal,)
+          
+
+
+
+
+
+
+        }
         public void ApplyConfiguration(string ecfgPath)
         {
             EcfgPath = ecfgPath;
@@ -81,18 +93,11 @@ namespace CumminsEcmEditor.Cummins
 
 
                 // Temp for debugging
-                if (itn == 3)
-                {
-                  Console.WriteLine($"Calibration_Date_Stamp address = {Contents[i].GetHexAddress()}");
-                  byte[] dateStamp = GetData(Contents[i].AbsoluteAddress, 6);
-                  foreach (byte b in dateStamp){
-                    Console.WriteLine(b.ToString("X2"));
-                  }
-                }
                 if (itn == 1)
                 {
                   Console.WriteLine($"Block Data Structure address = {Contents[i].GetHexAddress()}");
                   byte[] blockStructure = GetData(Contents[i].AbsoluteAddress, 60);
+                  DataStructure = new(XCal, blockStructure)
                   Console.WriteLine();
                   foreach (byte b in blockStructure)
                   {
