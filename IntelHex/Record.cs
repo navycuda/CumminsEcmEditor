@@ -65,6 +65,13 @@ namespace CumminsEcmEditor.IntelHex
             ExtendedLinearAddress = extendedLinearAddress;
             ProcessRecord(hexLine, extendedLinearAddress);
         }
+        public Record(int extendedLinearAddress, int address, byte recordType, byte[] data)
+        {
+          RecordLength = (byte)data.Length;
+          Address = address;
+          ExtendedLinearAddress = extendedLinearAddress;
+          RecordType = recordType;
+        }
         #endregion
 
         #region Private Methods

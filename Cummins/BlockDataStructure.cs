@@ -98,8 +98,8 @@ namespace CumminsEcmEditor.Cummins
       return sum;
     }
     private int GetBlockCount() => Data[2].ToInt(XCal.GetByteOrder());
-    private int GetBlockStartAddress(int blockIndex) => Data[4 + blockIndex].ToInt(XCal.GetByteOrder());
-    private int GetBlockLength(int blockIndex) => Data[14 + blockIndex].ToInt(XCal.GetByteOrder());
+    public int GetBlockStartAddress(int blockIndex) => Data[4 + blockIndex].ToInt(XCal.GetByteOrder());
+    public int GetBlockLength(int blockIndex) => Data[14 + blockIndex].ToInt(XCal.GetByteOrder());
     private string GetBlockHexStartAddress(int blockIndex) => GetBlockStartAddress(blockIndex).IntToHex(4);
   }
 }
