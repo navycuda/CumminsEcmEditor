@@ -6,10 +6,13 @@ namespace CumminsEcmEditor.Binary
 {
   public class EcmBin 
   {
-    #region Properties
+    #region Private Properties
     private byte[] EcmBinary { get; set; }
-    private BlockDataStructure DataStructure { get; set; }
-    private Record[] Records { get; set; }
+    private Calibration XCalOfBin { get; set; }
+    #endregion
+
+    #region Properties
+    public BlockDataStructure DataStructure { get; set; }
     #endregion
 
     public EcmBin(string binPath, BlockDataStructure dataStructure)
