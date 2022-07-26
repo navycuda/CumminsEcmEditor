@@ -97,6 +97,21 @@ namespace CumminsEcmEditor.Tools
         #endregion
 
         #region Load Methods
+        public static byte[] LoadBinary(string binPath) 
+        {
+          using (FileStream fs = File.OpenRead(binPath))
+          {
+            List<byte> binary = new();
+            using (BinaryReader reader = new(fs))
+            {
+              while (reader.BaseStream.Position != reader.BaseStream.Length)
+              {
+                binary.Add(reader.ReadByte());
+              }
+            }
+            return binary.ToArray();
+          }
+        }
         /// <summary>
         /// Loads a string array from the filePatj
         /// </summary>
