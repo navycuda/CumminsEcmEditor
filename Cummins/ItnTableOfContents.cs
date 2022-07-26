@@ -26,10 +26,10 @@ namespace CumminsEcmEditor.Cummins
         private List<EcmParameter> EcmParameters { get; set; }
         private int _NegativeCounter = -1;
         private int NegativeCounter => _NegativeCounter--;
-        private BlockDataStructure DataStructure {get; set;}
         #endregion
 
         #region Properties
+        public BlockDataStructure DataStructure {get; set;}
         public XCalByteOrder ByteOrder { get; set; }
         #endregion
 
@@ -45,17 +45,6 @@ namespace CumminsEcmEditor.Cummins
         #endregion
 
         #region Public Methods
-        public string[] GetBlockDataStructure() 
-        {
-          BlockDataStructure bDS = new(XCal,)
-          
-
-
-
-
-
-
-        }
         public void ApplyConfiguration(string ecfgPath)
         {
             EcfgPath = ecfgPath;
@@ -90,22 +79,12 @@ namespace CumminsEcmEditor.Cummins
                     i++;
                 if (i == Contents.Length || p == parameters.Length)
                     isPairing = false;
-
-
-                // Temp for debugging
-                if (itn == 1)
-                {
-                  Console.WriteLine($"Block Data Structure address = {Contents[i].GetHexAddress()}");
-                  byte[] blockStructure = GetData(Contents[i].AbsoluteAddress, 60);
-                  DataStructure = new(XCal, blockStructure)
-                  Console.WriteLine();
-                  foreach (byte b in blockStructure)
-                  {
-                    Console.Write($"{b.ToString("X2")} ");
-                  }
-                  Console.WriteLine();
-                }
             }
+            // Setup the Block DataStructure
+            Itn blockDataStructure = Contents.Where(c => c.Id == 1).First();
+            Console.WriteLine($"Block Data Structure Address = {blockDataStructure.GetHexAddress()}");
+            byte[] dataStructure = GetData(blockDataStructure.AbsoluteAddress, blockDataStructure.ByteCount);
+            DataStructure = new(XCal, dataStructure);
 
         }
         public Itn[] GetAllItns(SortItnsBy sortedBy)

@@ -113,8 +113,13 @@ namespace CumminsEcmEditor.Cummins
             $"XCalPath = {XCal.GetXCalPath()}",
             $"EcfgPath = {XCal.TableOfContents.GetEcfgPath()}",
             "********************************",
+            "Block Data Structure",
             ""
           };
+          // Add the block data Structure
+          Document.AddRange(XCal.TableOfContents.DataStructure.GetBlockDataStructure());
+          Document.Add("********************************");
+          Document.Add("");
           // Get the Itns
           Itn[] itns = XCal.TableOfContents.GetAllItns(SortItnsBy.None);
 
@@ -153,7 +158,7 @@ namespace CumminsEcmEditor.Cummins
           // string rowCount = $"{rows.ToString().PadLeft(6)} rows".ToPaddedString(12);
           // string colCount = $"{cols.ToString().PadLeft(6)} cols".ToPaddedString(12);
           // string elementSize = $"{eSize}B".ToPaddedString(6);
-          string dataType = $"{pT}".ToPaddedString(20);
+          string dataType = $"{pT}".ToPaddedString(32);
 
           Document.Add($"{hexId} @ {hexAddress}{byteCount}{dataType}{name}");
         }

@@ -70,9 +70,29 @@ namespace CumminsEcmEditor.Cummins
         new byte[]{ b[52], b[53], b[54], b[55] }, // 16 block2.Length
         new byte[]{ b[56], b[57], b[58], b[59] }, // 17 block3.Length
       };
+
+      // temp for debugging
+      string[] bds = GetBlockDataStructure();
+      foreach (string s in bds)
+        Console.WriteLine(s);
     } 
-      
-    public int GetBlockStartAddress(int blockIndex) => Data[4 + blockIndex].ToInt(XCal.GetByteOrder());
-    public int GetBlockLength(int blockIndex) => Data[14 + blockIndex].ToInt(XCal.GetByteOrder());
+
+    public string[] GetBlockDataStructure()
+    {
+      int sum = 0;
+      string[] result = new string[6];
+      for (int b = 0; b < 4; b++)
+      {
+        result[b] = $"\tBlock [{b}]  :  {GetBlockHexStartAddress(b)} :: {GetBlockLength(b)}bytes";
+        sum += GetBlockLength(b);
+      }
+      result[4] = $"--------------------------------";
+      result[5] = $"Total: {sum}bytes".PadLeft(32);
+      return result;
+    }
+    private int GetBlockCount() => Data[2].ToInt(XCal.GetByteOrder());
+    private int GetBlockStartAddress(int blockIndex) => Data[4 + blockIndex].ToInt(XCal.GetByteOrder());
+    private int GetBlockLength(int blockIndex) => Data[14 + blockIndex].ToInt(XCal.GetByteOrder());
+    private string GetBlockHexStartAddress(int blockIndex) => GetBlockStartAddress(blockIndex).IntToHex(4);
   }
 }

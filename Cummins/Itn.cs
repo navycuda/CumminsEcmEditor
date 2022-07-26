@@ -29,9 +29,9 @@ namespace CumminsEcmEditor.Cummins
         #region Get Methods
         public EcmParameterType GetEcmParameterType()
         {
-          DataType dT = Parameter.data_type;
           if (!HasParameter())
             return EcmParameterType.None;
+          DataType dT = Parameter.data_type;
           EcmParameterType result = GetElementType(dT, EcmParameterType.None);
           if (result != EcmParameterType.None)
             return result;
