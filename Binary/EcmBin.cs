@@ -20,18 +20,16 @@ namespace CumminsEcmEditor.Binary
       EcmBinary = EcmFiles.LoadBinary(binPath);
       DataStructure = dataStructure;
     }
-    public Calibration GetCalibration() 
-    {
-      if (EcmBinary.Length != DataStructure.GetTotalBytes())
-        throw new Exception("Not good bro");
-      List<Record> records = new();
-      int absPos = 0;
-      int Pos = DataStructure.GetBlockStartAddress(0);
-      
+    //public Calibration GetCalibration() 
+    //{
+    //  if (EcmBinary.Length != DataStructure.GetTotalBytes())
+    //    throw new Exception("Not good bro");
+    //  List<Record> records = new();
+    //  int absPos = 0;
+    //  int Pos = DataStructure.GetBlockStartAddress(0);
 
+    //  return new Calibration();
 
-
-
-    }
+    //}
   }
 }
