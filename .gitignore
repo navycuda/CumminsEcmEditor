@@ -7,3 +7,5 @@ ConsoleEditor/obj/
 CumminsEcmEditor-workspace.code-workspace
 .~lock.EcmEditorFlowishChart.odg#
 .vscode/
+.data/
+.DS_Store
