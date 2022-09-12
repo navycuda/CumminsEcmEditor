@@ -1,12 +1,17 @@
 ﻿// See https://aka.ms/new-console-template for more information
-//using CumminsEcmEditor.Cummins;
-//using CumminsEcmEditor.IntelHex;
-//using CumminsEcmEditor.Tools.Extensions;
-//using CumminsEcmEditor.WinOLS;
+using CumminsEcmEditor.Cummins;
+using CumminsEcmEditor.IntelHex;
+using CumminsEcmEditor.Tools.Extensions;
+using CumminsEcmEditor.WinOLS;
 using System;
 
-Console.WriteLine(args);
-Environment.Exit(0);
+// output the args just to verify they are there
+foreach (string arg in args)
+  Console.WriteLine(arg);
+
+
+
+//Environment.Exit(0);
 if(args.Length == 0)
 {
   Console.WriteLine("No arguments passed, help for help");
