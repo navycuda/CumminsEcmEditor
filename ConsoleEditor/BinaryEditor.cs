@@ -108,7 +108,7 @@ namespace ConsoleEditor
           }
           if (blockPosition == block.Length)
           {
-            Console.WriteLine($"> {(ela + address).ToString("x8")}");
+            Console.WriteLine($"  > {(ela + address).ToString("x8")}");
             blockIndex++;
             newPass = true;
           }
