@@ -75,6 +75,7 @@ namespace ConsoleEditor
           if (newPass)
           {
             block = blockDataStructure[blockIndex];
+            Console.WriteLine($"Starting Block @ {block.StartAddress.ToString("x8")}");
             ela = block.StartAddress;
             ela = ela >> 16;
             ela = ela << 16;
@@ -106,6 +107,7 @@ namespace ConsoleEditor
           }
           if (blockPosition == block.Length)
           {
+            Console.WriteLine($"> {(ela + address).ToString("x8")}");
             blockIndex++;
             newPass = true;
           }
