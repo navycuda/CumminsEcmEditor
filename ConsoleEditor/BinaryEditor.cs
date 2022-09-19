@@ -1,4 +1,6 @@
 ﻿using System;
+using CumminsEcmEditor.Binary;
+
 namespace ConsoleEditor
 {
   public static class BinaryEditor
@@ -15,16 +17,24 @@ namespace ConsoleEditor
 
       if (File.Exists(loadBinPath))
       {
-        Console.Write("The binary exists");
-
-
-
-
+        EcmBin ecmBin = new(File.ReadAllBytes(loadBinPath));
 
 
 
       }
+
+
     }
+  }
+
+
+
+  public class EcmBlockData
+  {
+
+
+
+
   }
 }
 
