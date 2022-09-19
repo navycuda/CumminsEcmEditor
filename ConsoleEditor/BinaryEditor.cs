@@ -76,6 +76,7 @@ namespace ConsoleEditor
           {
             block = blockDataStructure[blockIndex];
             Console.WriteLine($"Starting Block @ {block.StartAddress.ToString("x8")}");
+            Console.WriteLine($"  Length: {block.Length}");
             ela = block.StartAddress;
             ela = ela >> 16;
             ela = ela << 16;
