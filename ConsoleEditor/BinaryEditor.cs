@@ -13,10 +13,17 @@ namespace ConsoleEditor
       Console.WriteLine($"loading from : {loadBinPath}");
       Console.WriteLine($"saving to    : {saveXcalPath}");
 
+      if (File.Exists(loadBinPath))
+      {
+        Console.Write("The binary exists");
 
 
 
 
+
+
+
+      }
     }
   }
 }
