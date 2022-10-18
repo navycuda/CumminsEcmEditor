@@ -73,20 +73,47 @@ namespace ConsoleEditor
         for (int b = 0; b < ecmBin.Length; b++)
         {
           if (newPass)
+
+            
+
+
           {
             block = blockDataStructure[blockIndex];
             Console.WriteLine($"Starting Block @ {block.StartAddress.ToString("x8")}");
             Console.WriteLine($"  Length: {block.Length}");
-            ela = block.StartAddress;
+            ela = (int)block.StartAddress;
             ela = ela >> 16;
+            // Bytes to make up the extended linear address record
+            byte[] elaBytes = new byte[]
+            {
+              (byte)(ela >> 8),
+              (byte)(ela & 0xFF)
+            };
             ela = ela << 16;
-            address = block.StartAddress - ela;
+            address = (int)block.StartAddress - ela;
             newPass = false;
             blockPosition = 0;
+
+
+
+            // New pass, needs to make a new extended linear address
+
+            Record elaRecord = new(ela, address, 0x04, elaBytes);
+
           }
 
           // Do the work before updating the block position,
           // address, etc.
+
+
+
+
+
+
+
+
+
+
 
 
 
