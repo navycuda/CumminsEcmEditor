@@ -81,7 +81,7 @@ namespace ConsoleEditor
             block = blockDataStructure[blockIndex];
             Console.WriteLine($"Starting Block @ {block.StartAddress.ToString("x8")}");
             Console.WriteLine($"  Length: {block.Length}");
-            ela = (int)block.StartAddress;
+            ela = (uint)block.StartAddress;
             ela = ela >> 16;
             // Bytes to make up the extended linear address record
             byte[] elaBytes = new byte[]
@@ -90,7 +90,7 @@ namespace ConsoleEditor
               (byte)(ela & 0xFF)
             };
             ela = ela << 16;
-            address = (int)block.StartAddress - ela;
+            address = (uint)block.StartAddress - ela;
             newPass = false;
             blockPosition = 0;
 
@@ -98,7 +98,7 @@ namespace ConsoleEditor
 
             // New pass, needs to make a new extended linear address
 
-            Record elaRecord = new(ela, address, 0x04, elaBytes);
+            // Record elaRecord = new(ela, address, 0x04, elaBytes);
 
           }
 
