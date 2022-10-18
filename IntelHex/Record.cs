@@ -71,13 +71,17 @@ namespace CumminsEcmEditor.IntelHex
       Address = address;
       ExtendedLinearAddress = extendedLinearAddress;
       RecordType = recordType;
+      Data = data;
+      ProcessRecord();
     }
     #endregion
 
     #region Private Methods
+    // Not sure I need to process the checksum outside the constructor
+    // but here it is anyways.
     private void ProcessRecord()
     {
-      
+      CheckSum = GetRecordString().CheckSum();
     }
 
     // Process record from an intelhex file
